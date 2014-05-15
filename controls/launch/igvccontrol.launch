@@ -5,10 +5,12 @@
 	<param name="r" value="0.7"/>
 	
 <node pkg="joy" type="joy_node" name="joy_node" respawn="true" />
+
+<node pkg="controls" type="testcmdvel" name="testcmdvel" respawn="true" />
 	
 <node pkg="controls" type="encoders" name="encoders" respawn="true"/>
 	
-<node pkg="controls" type="overriding_node" name = "overriding_layer" respawn="true" output="screen"/>
+<node pkg="controls" type="overriding_layer" name = "overriding_layer" respawn="true" output="screen"/>
 
 <node pkg="eklavya4_roboteq" type="roboteq_server" name = "roboteq_server" respawn="true"/>	
 

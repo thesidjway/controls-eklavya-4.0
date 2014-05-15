@@ -32,7 +32,7 @@ catkin_package(
 
 ## Build talker and listener
 include_directories(
-   
+    include
 	${catkin_INCLUDE_DIRS}
 	${roscpp_INCLUDE_DIRS}
 	${rospy_INCLUDE_DIRS}
@@ -44,18 +44,28 @@ add_executable(encoders src/encoders.cpp src/eqep.cpp)
 target_link_libraries(encoders ${catkin_LIBRARIES})
 add_dependencies(encoders roscpp std_msgs geometry_msgs controls_msgs_gencpp )
 
+
+add_executable(test_encoders src/test_encoder.cpp)
+target_link_libraries(test_encoders ${catkin_LIBRARIES})
+
 add_executable(overriding_node src/overriding_layer.cpp src/BlackGPIO.cpp  src/BlackCore.cpp src/BlackPWM.cpp)
 target_link_libraries(overriding_node ${catkin_LIBRARIES} ) 
 add_dependencies(overriding_node roscpp rospy joy sensor_msgs std_msgs geometry_msgs diagnostic_updater)
 
-add_executable(wpid_node src/w_pid.cpp )
-target_link_libraries(wpid_node ${catkin_LIBRARIES})
-add_dependencies(wpid_node roscpp std_msgs geometry_msgs)
+#add_executable(wpid_node src/w_pid.cpp )
+#target_link_libraries(wpid_node ${catkin_LIBRARIES})
+#add_dependencies(wpid_node roscpp std_msgs geometry_msgs)
 
-add_executable(vxpid_node src/vx_pid.cpp src/BlackCore.cpp src/BlackPWM.cpp)
-target_link_libraries(vxpid_node ${catkin_LIBRARIES})
-add_dependencies(vxpid_node roscpp std_msgs geometry_msgs)
+#add_executable(vxpid_node src/vx_pid.cpp src/BlackCore.cpp src/BlackPWM.cpp)
+#target_link_libraries(vxpid_node ${catkin_LIBRARIES})
+#add_dependencies(vxpid_node roscpp std_msgs geometry_msgs)
 
+add_executable(wpid_node_bypass src/w_pidbypass.cpp )
+target_link_libraries(wpid_node_bypass ${catkin_LIBRARIES})
+add_dependencies(wpid_node_bypass roscpp std_msgs geometry_msgs)
 
+add_executable(vxpid_node_bypass src/vx_pidbypass.cpp src/BlackCore.cpp src/BlackPWM.cpp)
+target_link_libraries(vxpid_node_bypass ${catkin_LIBRARIES})
+add_dependencies(vxpid_node_bypass roscpp std_msgs geometry_msgs)
 
 

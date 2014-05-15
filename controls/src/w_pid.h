@@ -1,5 +1,5 @@
-#ifndef VX_PID
-#define VX_PID
+#ifndef W_PID
+#define W_PID
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>

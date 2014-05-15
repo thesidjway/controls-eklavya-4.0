@@ -21,9 +21,12 @@ OverridingLayer::OverridingLayer() :
 
 void OverridingLayer::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main callback function for xbox data
 {
+		cout<<"Xbox Data in use";
 
-  	if ( (joy->axes[5]<1.0)&&(joy->axes[5]>= -1.0) ){
+  	if ( (joy->axes[5]<0.9)&&(joy->axes[5]>= -0.9) ){
 	
+	cout<<"Xbox Data in use";
+	cout<<endl;
 	xbox_flag_lock.lock();
 	xboxflag=1;
 	xbox_flag_lock.unlock();
@@ -107,7 +110,8 @@ void OverridingLayer::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main 
 }
 
 void OverridingLayer::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
-{		
+{		cout<<"Planner Data in Use";
+		cout<<endl;
 		xbox_flag_lock.lock();
 		
 		if(xboxflag==1)
@@ -185,7 +189,7 @@ void OverridingLayer::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 		planner_flag_lock.unlock();
 		xbox_flag_lock.unlock();
 		
-		
+		ros::spinOnce();
 	}
  }
  

@@ -68,11 +68,13 @@ int main (int argc, char** argv)
 	float lw_vel =  (( (float)left_wheel.get_position() / 0.1)*3.14159*0.4064)/12800 ;   
 	float rw_vel =  (( (float)right_wheel.get_position()/0.1)*3.14159*0.4064)/12800 ;
 
-	if((lw_vel<0.001&&lw_vel>-0.001))
+	/*if((lw_vel<0.001&&lw_vel>-0.001))
 		lw_vel=0;
 	if((rw_vel<0.001&&rw_vel>-0.001))
 		rw_vel=0;
-	
+	*/
+	lw_vel=5;
+	rw_vel=5;
 	std::cout << "vel_L = " << lw_vel << " vel_R = "<< rw_vel <<std::endl;
 	
 	msg.left_vel = lw_vel;	

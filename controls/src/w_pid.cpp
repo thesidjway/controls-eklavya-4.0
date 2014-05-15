@@ -17,7 +17,7 @@ WPid::WPid() :
 	Alpha_min=0;
 	r=0; d=0;
 	W_error_sum=0; W_error_integral=0; W_error_diff=0; W_error_old=0;
-	w_pid_loop_rate=0;
+	w_pid_loop_rate=10;
 
 }
 
@@ -83,9 +83,12 @@ void WPid::implementPid(int argc, char** argv)
 
   std_msgs::Float64 alpha_msg;
 
+	std::cout<<std::endl;
+	int i=0;
   while (ros::ok())
   {
-
+	std::cout<<"running loop no."<<i++;
+	std::cout<<std::endl;
     Vl_Vr_a_lock.lock();
     W_t_Lock.lock();
     double W_error = W_t - W_a;
@@ -97,8 +100,6 @@ void WPid::implementPid(int argc, char** argv)
     W_error_old = W_error;
 
     W_error_integral = getMinMax((W_error_sum) * Ki_W, Alpha_max, Alpha_min);
-    W_t_Lock.unlock();
-    Vl_Vr_a_lock.unlock();
 
     W_error_diff = W_error_old - W_error;
     W_error_sum += W_error;
@@ -115,6 +116,7 @@ void WPid::implementPid(int argc, char** argv)
     alpha_pub.publish(alpha_msg);
 
     ros::spinOnce();
+  
     loop_rate.sleep();
 
   }
