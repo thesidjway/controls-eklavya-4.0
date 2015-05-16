@@ -19,10 +19,12 @@ VxPid::VxPid() :
 	Vx_error_old=0;
 	Vx_error_integral=0;
 	PWM_Duty_Cycle=0;
+	vx_pid_loop_rate=0;
 	//int    Vs_PID_loop_rate;
 
 	PWM_min_percent=0; PWM_max_percent=0;
 	PWM_PERIOD_TIME=0;     // in ns
+	
 	
 }
 
@@ -76,31 +78,34 @@ void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 void VxPid::implementPid(int argc, char** argv)
 {
 
-  ros::init(argc, argv, "vxpid_node");
+	ros::init(argc, argv, "vxpid_node");
 
-  ros::NodeHandle nh_;
-  ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose", 5,
-                                                                            &VxPid::vxTargetUpdateCallback, this);
-  //ros::Subscriber Alpha_Actual_Subscriber = nh_.subscribe<std_msgs::Float64>("alpha_val_actual" , 5 , Alpha_actual_callback);
-  ros::Subscriber Encoder_Subscriber = nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &VxPid::encoderCallback,
-                                                                            this);
+	ros::NodeHandle nh_;
+	ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose", 5,
+																		&VxPid::vxTargetUpdateCallback, this);
+	//ros::Subscriber Alpha_Actual_Subscriber = nh_.subscribe<std_msgs::Float64>("alpha_val_actual" , 5 , Alpha_actual_callback);
+	ros::Subscriber Encoder_Subscriber = nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &VxPid::encoderCallback,
+																		this);
 
-  ros::Rate loop_rate(20);
 
-  nh_.getParam("/vxpid_node/Kp_Vx", Kp_Vx);
-  nh_.getParam("/vxpid_node/Ki_Vx", Ki_Vx);
-  nh_.getParam("/vxpid_node/Kd_Vx", Kd_Vx);
-  //nh_.getParam("/Vs_PID/Vs_PID_loop_rate", Vs_PID_loop_rate);
-  nh_.getParam("/vxpid_node/PWM_min", PWM_min_percent);
-  nh_.getParam("/vxpid_node/PWM_max", PWM_max_percent);
-  nh_.getParam("/vxpid_node/PWM_PERIOD_TIME", PWM_PERIOD_TIME);
 
- // nh_.getParam("d", d); 					       // Front wheel center to rear wheel line center distance
- // nh_.getParam("r", r);					       // Rear wheel center to center of line joining distance
+	nh_.getParam("/vxpid_node/Kp_Vx", Kp_Vx);
+	nh_.getParam("/vxpid_node/Ki_Vx", Ki_Vx);
+	nh_.getParam("/vxpid_node/Kd_Vx", Kd_Vx);
+	//nh_.getParam("/Vs_PID/Vs_PID_loop_rate", Vs_PID_loop_rate);
+	nh_.getParam("/vxpid_node/PWM_min", PWM_min_percent);
+	nh_.getParam("/vxpid_node/PWM_max", PWM_max_percent);
+	nh_.getParam("/vxpid_node/PWM_PERIOD_TIME", PWM_PERIOD_TIME);
+	nh_.getParam("/vxpid_node/vx_pid_loop_rate", vx_pid_loop_rate);
+	
+	// nh_.getParam("d", d); 					       // Front wheel center to rear wheel line center distance
+	// nh_.getParam("r", r);					       // Rear wheel center to center of line joining distance
 
-  BlackLib::BlackPWM pwm_signal_pin(BlackLib::EHRPWM2A);
+	BlackLib::BlackPWM pwm_signal_pin(BlackLib::EHRPWM2A);
 
-  pwm_signal_pin.setPeriodTime(PWM_PERIOD_TIME);
+	pwm_signal_pin.setPeriodTime(PWM_PERIOD_TIME);
+
+	ros::Rate loop_rate(vx_pid_loop_rate);
 
   while (ros::ok())
   {

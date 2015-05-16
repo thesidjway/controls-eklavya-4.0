@@ -43,6 +43,8 @@ private:
 	int PWM_min_percent, PWM_max_percent;
 	double PWM_PERIOD_TIME;     // in ns
 	
+	int vx_pid_loop_rate;
+	
 	std::mutex Vx_t_lock , Alpha_lock , Vl_Vr_a_lock;
 
 public:

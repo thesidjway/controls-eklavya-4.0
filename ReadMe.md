@@ -1,4 +1,4 @@
-"encoder" node in "controls" package publishes both the rear wheels' RPM as a controls/encoder_msg on the topic "encoders" encoder_msg: float32 left_vel
+"encoder" node in "controls" package publishes both the rear wheels' RPM as a controls_msgs/encoder_msg on the topic "encoders" encoder_msg: float32 left_vel
 float32 right_vel
 
 eQEP2 = "/sys/devices/ocp.2/48304000.epwmss/48304180.eqep"
@@ -24,3 +24,4 @@ Planner's pose is published on "cmd_vel" topic  (running on PC)
 "joy" node publishes Xbox controller messages on "joy" topic by
 "overriding_layer" node publishes final pose on "target_pose"
 "wpid_node" publishes manipulated steering angle value on "alpha_val_manipulated"
+

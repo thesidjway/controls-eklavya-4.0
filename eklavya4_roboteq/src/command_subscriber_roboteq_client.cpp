@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	
 	client = &serviceClient;
     
-    ros::Subscriber sub = n->subscribe("alpha_val_manipulated", 1, commandStearingAngleCallback);
+    ros::Subscriber sub = n->subscribe("alpha_val_manipulated", 10, commandStearingAngleCallback);
     
     ros::spin();
     

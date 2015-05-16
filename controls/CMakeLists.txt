@@ -32,7 +32,7 @@ catkin_package(
 
 ## Build talker and listener
 include_directories(
-    include
+   
 	${catkin_INCLUDE_DIRS}
 	${roscpp_INCLUDE_DIRS}
 	${rospy_INCLUDE_DIRS}
@@ -43,10 +43,6 @@ include_directories(
 add_executable(encoders src/encoders.cpp src/eqep.cpp)
 target_link_libraries(encoders ${catkin_LIBRARIES})
 add_dependencies(encoders roscpp std_msgs geometry_msgs controls_msgs_gencpp )
-
-
-add_executable(test_encoders src/test_encoder.cpp)
-target_link_libraries(test_encoders ${catkin_LIBRARIES})
 
 add_executable(overriding_node src/overriding_layer.cpp src/BlackGPIO.cpp  src/BlackCore.cpp src/BlackPWM.cpp)
 target_link_libraries(overriding_node ${catkin_LIBRARIES} ) 

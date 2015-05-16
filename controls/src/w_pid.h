@@ -28,10 +28,11 @@ private:
 
 	double Alpha_max;
 	double Alpha_min;
-	//double d;         // Front wheel center to rear wheel line center distance
+	double d;         // Front wheel center to rear wheel line center distance
 	double r;		  // Rear wheel center to center of line joining distance	
 
 	double W_error_sum, W_error_integral, W_error_diff, W_error_old;
+	int w_pid_loop_rate;
 
 public:
 

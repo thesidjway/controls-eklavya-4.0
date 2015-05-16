@@ -9,7 +9,11 @@
 <node pkg="controls" type="encoders" name="encoders" respawn="true"/>
 	
 <node pkg="controls" type="overriding_node" name = "overriding_layer" respawn="true" output="screen"/>
-	
+
+<node pkg="eklavya4_roboteq" type="roboteq_server" name = "roboteq_server" respawn="true"/>	
+
+<node pkg="eklavya4_roboteq" type="roboteq_client" name = "roboteq_client" respawn="true"/>
+
 <node pkg="controls" type="vxpid_node" name="vxpid_node" respawn="true">
 	<param name="Kp_Vx" value="10"/>
 	<param name="Ki_Vx" value="5"/>
@@ -17,12 +21,17 @@
 	<param name="PWM_min" value="15"/>
 	<param name="PWM_max" value="85"/>
 	<param name="PWM_PERIOD_TIME" value="50000000"/>
+	<param name="vx_pid_loop_rate" value="20"/>
+
+
 </node>
 
 <node pkg="controls" type="wpid_node" name="wpid_node" respawn="true">
 	<param name="Kp_W" value="10"/>
 	<param name="Ki_W" value="5"/>
 	<param name="Kd_W" value="0.02"/>
+	<param name="w_pid_loop_rate" value="20"/>
+	
 </node>
 	
 </launch>
