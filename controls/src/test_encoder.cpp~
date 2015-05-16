@@ -1,0 +1,21 @@
+#include "ros/ros.h"
+#include "controls/encoder_msg.h"
+#inlcude <iostream>
+
+void chatterCallback(const controls::encoder_msg::ConstPtr& msg)
+{
+  std::cout<<"Left Wheel: "<< msg->left_rpm << "Right Wheel: "<< msg->right_rpm << std::endl; 
+}
+
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "test_encoder");
+
+  ros::NodeHandle n;
+
+  ros::Subscriber sub = n.subscribe("encoders", 1000, chatterCallback);
+
+  ros::spin();
+
+  return 0;
+}

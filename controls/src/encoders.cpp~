@@ -1,0 +1,63 @@
+#include "eqep.h"
+#include <string>
+#include "ros/ros.h"
+#include "controls/encoder_msg.h"
+#include <iostream>
+
+/*
+encoder_msg
+-> left_rpm	
+-> right_rpm
+*/
+
+
+using namespace std;
+
+int main (int argc, char** argv)
+{
+    ros::init(argc,argv,"encoders");
+    ros::NodeHandle n;
+	ros::Publisher pub_encoder = n.advertise<controls::encoder_msg>("encoders",1000);
+	ros::Rate loop_rate(100);
+
+	
+	//std::string eQEP0 = "/sys/devices/ocp.2/48300000.epwmss/48300180.eqep";
+     //std::string eQEP1 = "/sys/devices/ocp.2/48302000.epwmss/48302180.eqep";
+    //eQEP2 = "/sys/devices/ocp.2/48304000.epwmss/48304180.eqep"
+	
+	//left wheel encoder at epeq0
+    eQEP left_wheel(std::string ("/sys/devices/ocp.3/48300000.epwmss/48300180.eqep"), eQEP::eQEP_Mode_Relative);
+    
+	//right wheel encoder at eqep1
+	eQEP right_wheel(std::string ("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep"), eQEP::eQEP_Mode_Relative);
+    
+	
+	// Set the unit time period to 100,000,0 ns, or 0.001 seconds
+    
+    left_wheel.set_period(1000000L);
+    right_wheel.set_period(1000000L);
+
+    
+    controls::encoder_msg msg;
+
+	while(ros::ok())
+    {
+    
+	float lw_rpm = (float)left_wheel.get_position()/3200*4;   
+	float rw_rpm = (float)right_wheel.get_position()/3200*4;
+
+	std::cout << "RPM_L = " << lw_rpm << " RPM_R = "<< rw_rpm <<std::endl;
+	
+	msg.left_rpm = lw_rpm;	
+	msg.right_rpm = rw_rpm;
+
+	pub_encoder.publish(msg);
+	ros::spinOnce();  
+
+	loop_rate.sleep();  
+	
+	}
+    
+    
+    return 0;
+}
