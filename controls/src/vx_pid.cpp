@@ -7,6 +7,23 @@ VxPid::VxPid() :
     Vx_t_lock(), Alpha_lock(), Vl_Vr_a_lock()
 {
 
+	Vr_a=0;
+  Vl_a=0;
+	Vx_t=0;   
+	Alpha_a=0;
+	Kp_Vx=0;
+  Ki_Vx=0;
+  Kd_Vx=0;
+	Vx_error_sum=0; 
+  Vx_error_diff=0;
+  Vx_error_old=0;
+  Vx_error_integral=0;
+	PWM_Duty_Cycle=0;
+	//int    Vs_PID_loop_rate;
+
+	int PWM_min_percent, PWM_max_percent;
+	double PWM_PERIOD_TIME;     // in ns
+	
 }
 
 double VxPid::getMinMax(int Cur_Var, int max, int min)
@@ -78,8 +95,8 @@ void VxPid::implementPid(int argc, char** argv)
   nh_.getParam("/vxpid_node/PWM_max", PWM_max_percent);
   nh_.getParam("/vxpid_node/PWM_PERIOD_TIME", PWM_PERIOD_TIME);
 
-  nh_.getParam("d", d); 					       // Front wheel center to rear wheel line center distance
-  nh_.getParam("r", r);					       // Rear wheel center to center of line joining distance
+ // nh_.getParam("d", d); 					       // Front wheel center to rear wheel line center distance
+ // nh_.getParam("r", r);					       // Rear wheel center to center of line joining distance
 
   BlackLib::BlackPWM pwm_signal_pin(BlackLib::EHRPWM2A);
 

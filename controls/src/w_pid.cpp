@@ -13,7 +13,9 @@ WPid::WPid() :
   Kp_W = 0;
   Ki_W = 0;
   Kd_W = 0;
-
+  Alpha_max=0;
+  Alpha_min=0;
+  r=0;
 }
 
 double WPid::getMinMax(int Cur_Var, int max, int min)
@@ -69,8 +71,8 @@ void WPid::implementPid(int argc, char** argv)
 
   pid_nh_.getParam("Alpha_max", Alpha_max);
   pid_nh_.getParam("Alpha_min", Alpha_min);
-  pid_nh_.getParam("d", d); // Front wheel center to rear wheel line center distance
-  pid_nh_.getParam("r", r); // Rear wheel center to center of line joining distance
+ /* pid_nh_.getParam("d", d); // Front wheel center to rear wheel line center distance
+*/  pid_nh_.getParam("r", r); // Rear wheel center to center of line joining distance
 
   ros::Rate loop_rate(20);
 

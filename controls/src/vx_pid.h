@@ -16,9 +16,8 @@
 
 #define PI 3.14159265
 //#define Vx_a ( (Vl_a+Vr_a)/2 )/( cos( (Alpha_a * PI)/180)) 
+
 #define Vx_a ( (Vl_a+Vr_a)/2 ) 
-
-
 
 using namespace std; 
 using namespace BlackLib;
@@ -28,17 +27,17 @@ class VxPid {
 	
 private:
 	
-	double Alpha_max;
-	double Alpha_min;
-	double d;         // Front wheel center to rear wheel line center distance
-	double r;		  // Rear wheel center to center of line joining distance	
+	//ouble Alpha_max;
+	//double Alpha_min;
+	//double d;         // Front wheel center to rear wheel line center distance
+	//double r;		  // Rear wheel center to center of line joining distance	
 
-	double Vr_a , Vl_a=0;
-	double Vx_t=0;   
-	double Alpha_a=0;
-	double Kp_Vx=0 , Ki_Vx=0 , Kd_Vx=0;
-	double Vx_error_sum=0 , Vx_error_diff=0 , Vx_error_old=0 , Vx_error_integral;
-	double PWM_Duty_Cycle=0;
+	double Vr_a , Vl_a;
+	double Vx_t;   
+	double Alpha_a;
+	double Kp_Vx, Ki_Vx, Kd_Vx;
+	double Vx_error_sum, Vx_error_diff, Vx_error_old , Vx_error_integral;
+	double PWM_Duty_Cycle;
 	//int    Vs_PID_loop_rate;
 
 	int PWM_min_percent, PWM_max_percent;

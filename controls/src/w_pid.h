@@ -20,15 +20,15 @@ private:
 	
 	std::mutex W_t_Lock , Alpha_Lock , Vl_Vr_a_lock;
 
-	double W_t=0;
-	double Vr_a=0 , Vl_a=0;
-	double Alpha_a=0 , Alpha_t=0;
+	double W_t;
+	double Vr_a , Vl_a;
+	double Alpha_a, Alpha_t;
 
-	double Kp_W=0 , Ki_W=0 , Kd_W=0;
+	double Kp_W, Ki_W, Kd_W;
 
 	double Alpha_max;
 	double Alpha_min;
-	double d;         // Front wheel center to rear wheel line center distance
+	//double d;         // Front wheel center to rear wheel line center distance
 	double r;		  // Rear wheel center to center of line joining distance	
 
 	double W_error_sum=0 , W_error_integral=0 , W_error_diff=0 , W_error_old=0;
