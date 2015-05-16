@@ -38,7 +38,7 @@ public:
 	WPid();
 	double getMinMax(int Cur_Var,int max,int min);
 	void encoderCallback(const controls::encoder_msg::ConstPtr& msg);
-	void vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg);
+	void wTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg);
 	void implementPid(int argc, char** argv);
 
 	};
