@@ -1,7 +1,7 @@
 #include "eqep.h"
 #include <string>
 #include "ros/ros.h"
-#include "controls/encoder_msg.h"
+#include "controls_msgs/encoder_msg.h"
 #include <iostream>
 
 /*
@@ -17,7 +17,7 @@ int main (int argc, char** argv)
 {
     ros::init(argc,argv,"encoders");
     ros::NodeHandle n;
-	ros::Publisher pub_encoder = n.advertise<controls::encoder_msg>("encoders",1000);
+	ros::Publisher pub_encoder = n.advertise<controls_msgs::encoder_msg>("encoders",1000);
 	ros::Rate loop_rate(5);
 
 	
@@ -60,7 +60,7 @@ int main (int argc, char** argv)
     right_wheel.set_period(100000000L);
 
     
-    controls::encoder_msg msg;
+    controls_msgs::encoder_msg msg;
 
 	while(ros::ok())
     {

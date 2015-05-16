@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <std_msgs/Float32.h>
-#include <controls/encoder_msg.h>
+#include <controls_msgs/encoder_msg.h>
 #include <std_msgs/Int32.h>
 #include <geometry_msgs/Twist.h>
 #include <cmath>

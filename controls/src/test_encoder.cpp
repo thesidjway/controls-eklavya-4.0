@@ -1,8 +1,8 @@
 #include "ros/ros.h"
-#include "controls/encoder_msg.h"
+#include "controls_msgs/encoder_msg.h"
 #include <iostream>
 
-void chatterCallback(const controls::encoder_msg::ConstPtr& msg)
+void chatterCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 {
   std::cout<<"Left Wheel: "<< msg->left_vel << "Right Wheel: "<< msg->right_vel << std::endl; 
 }

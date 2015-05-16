@@ -27,7 +27,7 @@ double WPid::getMinMax(int Cur_Var, int max, int min)
     return Cur_Var;
 }
 
-void WPid::encoderCallback(const controls::encoder_msg::ConstPtr& msg)
+void WPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 {
 
   ROS_INFO("\n Ws_PID: Encoder Reading Received \n");
@@ -57,7 +57,7 @@ void WPid::implementPid(int argc, char** argv)
 
   ros::Subscriber Override_Subscriber = pid_nh_.subscribe<geometry_msgs::Twist>("target_pose", 5,
                                                                                 &WPid::wTargetUpdateCallback, this);
-  ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<controls::encoder_msg>("encoders", 5, &WPid::encoderCallback,
+  ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &WPid::encoderCallback,
                                                                                 this);
 
   ros::Publisher alpha_pub = pid_nh_.advertise<std_msgs::Float64>("alpha_val_manipulated", 100);

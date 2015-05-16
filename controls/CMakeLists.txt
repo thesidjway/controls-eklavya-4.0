@@ -15,37 +15,35 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation 
 	joy
 	diagnostic_updater
+	controls_msgs
 )
 
-## Declare ROS messages and services
-add_message_files(FILES encoder_msg.msg)
 
-## Generate added messages and services
-generate_messages(DEPENDENCIES std_msgs)
+
 
 ## Declare a catkin package
 catkin_package(
 #	INCLUDE_DIRS include
 	LIBRARIES controls
-	CATKIN_DEPENDS roscpp joy rospy geometry_msgs sensor_msgs std_msgs diagnostic_updater joy message_runtime
+	CATKIN_DEPENDS roscpp joy rospy geometry_msgs sensor_msgs std_msgs diagnostic_updater joy 
 	)
 	
 
 
 ## Build talker and listener
 include_directories(
+    include
 	${catkin_INCLUDE_DIRS}
 	${roscpp_INCLUDE_DIRS}
 	${rospy_INCLUDE_DIRS}
 )
 
-include_directories(include)
-
 
 
 add_executable(encoders src/encoders.cpp src/eqep.cpp)
 target_link_libraries(encoders ${catkin_LIBRARIES})
-add_dependencies(encoders roscpp std_msgs geometry_msgs )
+add_dependencies(encoders roscpp std_msgs geometry_msgs controls_msgs_gencpp )
+
 
 add_executable(test_encoders src/test_encoder.cpp)
 target_link_libraries(test_encoders ${catkin_LIBRARIES})
