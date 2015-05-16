@@ -8,21 +8,21 @@ VxPid::VxPid() :
 {
 
 	Vr_a=0;
-  Vl_a=0;
+	Vl_a=0;
 	Vx_t=0;   
 	Alpha_a=0;
 	Kp_Vx=0;
-  Ki_Vx=0;
-  Kd_Vx=0;
+	Ki_Vx=0;
+	Kd_Vx=0;
 	Vx_error_sum=0; 
-  Vx_error_diff=0;
-  Vx_error_old=0;
-  Vx_error_integral=0;
+	Vx_error_diff=0;
+	Vx_error_old=0;
+	Vx_error_integral=0;
 	PWM_Duty_Cycle=0;
 	//int    Vs_PID_loop_rate;
 
-	int PWM_min_percent, PWM_max_percent;
-	double PWM_PERIOD_TIME;     // in ns
+	PWM_min_percent=0; PWM_max_percent=0;
+	PWM_PERIOD_TIME=0;     // in ns
 	
 }
 

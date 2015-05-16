@@ -5,17 +5,19 @@ WPid::WPid() :
     W_t_Lock(), Alpha_Lock(), Vl_Vr_a_lock()
 {
 
-  W_t = 0;
-  Vr_a = 0;
-  Vl_a = 0;
-  Alpha_a = 0;
-  Alpha_t = 0;
-  Kp_W = 0;
-  Ki_W = 0;
-  Kd_W = 0;
-  Alpha_max=0;
-  Alpha_min=0;
-  r=0;
+	W_t = 0;
+	Vr_a = 0;
+	Vl_a = 0;
+	Alpha_a = 0;
+	Alpha_t = 0;
+	Kp_W = 0;
+	Ki_W = 0;
+	Kd_W = 0;
+	Alpha_max=0;
+	Alpha_min=0;
+	r=0;
+	W_error_sum=0; W_error_integral=0; W_error_diff=0; W_error_old=0;
+
 }
 
 double WPid::getMinMax(int Cur_Var, int max, int min)

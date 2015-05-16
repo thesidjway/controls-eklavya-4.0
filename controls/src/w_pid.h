@@ -31,7 +31,7 @@ private:
 	//double d;         // Front wheel center to rear wheel line center distance
 	double r;		  // Rear wheel center to center of line joining distance	
 
-	double W_error_sum=0 , W_error_integral=0 , W_error_diff=0 , W_error_old=0;
+	double W_error_sum, W_error_integral, W_error_diff, W_error_old;
 
 public:
 
