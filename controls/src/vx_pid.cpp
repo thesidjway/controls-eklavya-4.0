@@ -62,9 +62,9 @@ void VxPid::implementPid(int argc, char** argv){
 	ros::init(argc, argv,"vxpid_node");
 
 	ros::NodeHandle nh_; 
-	ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose" , 5 , vxTargetUpdateCallback);
+	ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose" , 5 , &VxPid::vxTargetUpdateCallback, this);
 	//ros::Subscriber Alpha_Actual_Subscriber = nh_.subscribe<std_msgs::Float64>("alpha_val_actual" , 5 , Alpha_actual_callback);
-	ros::Subscriber Encoder_Subscriber = nh_.subscribe<controls::encoder_msg>("encoders" , 5 , encoderCallback);
+	ros::Subscriber Encoder_Subscriber = nh_.subscribe<controls::encoder_msg>("encoders" , 5 , &VxPid::encoderCallback,this );
 
 	//ros::Rate loop_rate(Vs_PID_loop_rate);
 
@@ -129,7 +129,7 @@ void VxPid::implementPid(int argc, char** argv){
 
 int main (int argc, char** argv) {
 
-	VxPid * vxPid = new vxPid();
+	VxPid * vxPid = new VxPid();
 	
 	vxPid->implementPid(argc,  argv);
 	
