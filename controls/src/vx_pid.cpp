@@ -65,8 +65,7 @@ void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
 void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 {
-
-  ROS_INFO("\n Ws_PID: Encoder Reading Received \n");
+	cout<<"\n Vx_PID: Encoder Reading Received \n"<<std::endl;
 
   Vl_Vr_a_lock.lock();
   Vl_a = msg->left_vel;
@@ -109,8 +108,7 @@ void VxPid::implementPid(int argc, char** argv)
 
   while (ros::ok())
   {
-
-    /*
+	/*
      Vl_Vr_a_lock.lock();
      Vx_t_lock.lock();
      Alpha_lock.lock();
@@ -124,6 +122,7 @@ void VxPid::implementPid(int argc, char** argv)
     Vx_t_lock.lock();
     Alpha_lock.lock();
     double Vx_error = Vx_t - Vx_a;
+    cout << "VXT= "<< Vx_t <<", VXA  " << Vx_a << ", error = "<< Vx_error << std::endl; 
     Alpha_lock.unlock();
     Vx_t_lock.unlock();
     Vl_Vr_a_lock.unlock();
@@ -136,11 +135,17 @@ void VxPid::implementPid(int argc, char** argv)
 
     PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx;
 
+    cout<< "current PWM = " << PWM_Duty_Cycle << std::endl;
+
     PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
 
     pwm_signal_pin.setDutyPercent(PWM_Duty_Cycle);
 
-    ros::spin();
+	cout<<"P = " << (Vx_error) * Kp_Vx << ", I = " << (Vx_error_integral) << ", D = " << (Vx_error_diff) * Kd_Vx << std::endl; 
+
+	cout<< "current PWM = " << PWM_Duty_Cycle << std::endl;
+
+    ros::spinOnce();
 
     loop_rate.sleep();
 
@@ -157,4 +162,3 @@ int main(int argc, char** argv)
   delete vxPid;
 
 }
-

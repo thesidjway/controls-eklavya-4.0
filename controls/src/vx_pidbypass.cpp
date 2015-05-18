@@ -165,7 +165,7 @@ void VxPidB::implementPid(int argc, char** argv)
   
     Vx_t_lock.lock();
     Alpha_lock.lock();
-    double PWM_Duty_Cycle = Vx_t*;
+    double PWM_Duty_Cycle = Vx_t;
     Alpha_lock.unlock();
     Vx_t_lock.unlock();
 

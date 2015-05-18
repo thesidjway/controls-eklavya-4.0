@@ -84,11 +84,10 @@ void WPid::implementPid(int argc, char** argv)
   std_msgs::Float64 alpha_msg;
 
 	std::cout<<std::endl;
-	int i=0;
+	
   while (ros::ok())
   {
-	std::cout<<"running loop no."<<i++;
-	std::cout<<std::endl;
+	
     Vl_Vr_a_lock.lock();
     W_t_Lock.lock();
     double W_error = W_t - W_a;

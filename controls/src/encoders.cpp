@@ -31,10 +31,10 @@ int main (int argc, char** argv)
 	
 	//right wheel encoder at eqep1
 	    
-	system("sudo echo bone_eqep1 > /sys/devices/bone_capemgr.*/slots");
+//	system("sudo echo bone_eqep1 > /sys/devices/bone_capemgr.*/slots");
 
-    /*                  0x0D4 0x32  P8_33 = GPIO0_9 = EQEP1B_in, MODE2
-                        0x0D0 0x32  P8_35 = GPIO0_8 = EQEP1A_in, MODE2 
+    /*                  0x0D4 0x32  P8_33 = GPIO0_9 = EQEP1A_in, MODE2 //channel B
+                        0x0D0 0x32  P8_35 = GPIO0_8 = EQEP1B_in, MODE2 //channel A
 	*/
 	
 	eQEP right_wheel(std::string ("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep"), eQEP::eQEP_Mode_Relative);
@@ -44,11 +44,11 @@ int main (int argc, char** argv)
     
 	eQEP left_wheel(std::string ("/sys/devices/ocp.3/48300000.epwmss/48300180.eqep"), eQEP::eQEP_Mode_Relative);
     
-	system("sudo echo bone_eqep0 > /sys/devices/bone_capemgr.*/slots");
+//	system("sudo echo bone_eqep0 > /sys/devices/bone_capemgr.*/slots");
 
 	/*
-                        0x1A0 0x31  P9_42 = GPIO3_18 = EQEP0A_in, MODE1 //channel B        
-                        0x1A4 0x31  P9_27 = GPIO3_19 = EQEP0B_in, MODE1 //channel A   
+                        0x1A0 0x31  P9_42 = GPIO3_18 = EQEP0B_in, MODE1 //channel B        
+                        0x1A4 0x31  P9_27 = GPIO3_19 = EQEP0A_in, MODE1 //channel A   
 	*/
 
 	
@@ -68,13 +68,12 @@ int main (int argc, char** argv)
 	float lw_vel =  (( (float)left_wheel.get_position() / 0.1)*3.14159*0.4064)/12800 ;   
 	float rw_vel =  (( (float)right_wheel.get_position()/0.1)*3.14159*0.4064)/12800 ;
 
-	/*if((lw_vel<0.001&&lw_vel>-0.001))
+	if((lw_vel<0.001&&lw_vel>-0.001))
 		lw_vel=0;
 	if((rw_vel<0.001&&rw_vel>-0.001))
 		rw_vel=0;
-	*/
-	lw_vel=5;
-	rw_vel=5;
+	
+
 	std::cout << "vel_L = " << lw_vel << " vel_R = "<< rw_vel <<std::endl;
 	
 	msg.left_vel = lw_vel;	
