@@ -30,7 +30,7 @@ ModeSwitcher::ModeSwitcher() :
 void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main callback function for xbox data
 {
 
-	cout<< "??????????????" << endl;
+//	cout<< "??????????????" << endl;
 
 	int manual_button=joy->buttons[4];
 	int auto_button=joy->buttons[5];
@@ -40,7 +40,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 	if(auto_button==1 && manual_button==0 )
 	{
 
-		std::cout<< "***************" <<std::endl;
+//		std::cout<< "***************" <<std::endl;
 		xbox_flag_lock.lock();
 		xboxflag=0;
 		xbox_flag_lock.unlock();
@@ -51,7 +51,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 	else if(manual_button==1 && auto_button==0)
 	{
 		xbox_flag_lock.lock();
-		std::cout<< "---------------" <<std::endl;
+//		std::cout<< "---------------" <<std::endl;
 		
 		xboxflag=1;
 		xbox_flag_lock.unlock();
@@ -149,7 +149,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 
 		if(temp_flag==1)
 		{
-			cout<<"XXXX "<< "Vx from xbox: "<< Vx_Xbox <<" Wx from xbox: "<< W_xbox<<std::endl;
+			cout<<"XXX"; //  << "Vx from xbox: "<< Vx_Xbox <<" Wx from xbox: "<< W_xbox<<std::endl;
 			cout<<endl;
 				
 				Vx_Xbox_lock.lock();
@@ -170,7 +170,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 		
 		else if(temp_flag==0)
 		{
-			cout<<"PPP"<<" Vx from planner: "<< Vx_Planner <<" W from planner: "<<W_Planner <<std::endl;
+			cout<<"PPP"; //<<" Vx from planner: "<< Vx_Planner <<" W from planner: "<<W_Planner <<std::endl;
 			
 				Vx_planner_lock.lock();
 					finaltwist.linear.x=Vx_Planner;

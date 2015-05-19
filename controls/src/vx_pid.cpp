@@ -123,9 +123,7 @@ void VxPid::implementPid(int argc, char** argv)
     Alpha_lock.lock();
     double Vx_error = Vx_t - Vx_a;
 
-    cout << " "<<  <<"  " <<  << " error: "<< ; 
-	
-	printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
+ 	printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
     
 	printf("VT: %3.3f VA: %3.3f  error: %3.3f ", Vx_t , Vx_a , Vx_error); 
 
@@ -151,7 +149,7 @@ void VxPid::implementPid(int argc, char** argv)
 
 	printf(" P: %3.3f  I: %3.3f D: %3.3f ", (Vx_error) * Kp_Vx , (Vx_error_integral) , (Vx_error_diff) * Kd_Vx ); 
 
-	printf(" G_PWM: %3.3f \n", PWM_Duty_Cycle); 
+	printf(" G_PWM: %3.3f ||||| ", PWM_Duty_Cycle); 
     ros::spinOnce();
 
     loop_rate.sleep();
