@@ -1,6 +1,8 @@
 #include "w_pid.h" 
 #include <iostream>
 
+using namespace std;
+
 WPid::WPid() :
     W_t_Lock(), Alpha_Lock(), Vl_Vr_a_lock()
 {
@@ -35,8 +37,7 @@ double WPid::getMinMax(int Cur_Var, int max, int min)
 void WPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 {
 
-  ROS_INFO("\n Ws_PID: Encoder Reading Received \n");
-
+ 
   Vl_Vr_a_lock.lock();
   Vl_a = msg->left_vel;
   Vr_a = msg->right_vel;
@@ -91,6 +92,11 @@ void WPid::implementPid(int argc, char** argv)
     Vl_Vr_a_lock.lock();
     W_t_Lock.lock();
     double W_error = W_t - W_a;
+	
+	printf("AlMin: %3.3f AlphaMax: %3.3f ", Alpha_min , Alpha_max); 
+    
+	printf("WT: %3.3f WA: %3.3f  error: %3.3f ", W_t, W_a, W_error); 
+    
     W_t_Lock.unlock();
     Vl_Vr_a_lock.unlock();
 
@@ -98,19 +104,28 @@ void WPid::implementPid(int argc, char** argv)
     W_error_sum += W_error;
     W_error_old = W_error;
 
-    W_error_integral = getMinMax((W_error_sum) * Ki_W, Alpha_max, Alpha_min);
+    W_error_integral = getMinMax((W_error_sum) * Ki_W , Alpha_max, - Alpha_max);
 
     W_error_diff = W_error_old - W_error;
     W_error_sum += W_error;
     W_error_old = W_error;
 
-    W_error_integral = getMinMax((W_error_sum) * Ki_W, Alpha_max, Alpha_min);
+    W_error_integral = getMinMax((W_error_sum) * Ki_W, Alpha_max, - Alpha_max);
 
     double Alpha_manipulated = (W_error) * Kp_W + (W_error_integral) + (W_error_diff) * Kd_W;
+
+
+	printf(" P: %3.3f  I: %3.3f D: %3.3f ", (W_error) * Kp_W , (W_error_integral) , (W_error_diff) * Kd_W ); 
+
+
+	printf( " C_Alpha: %3.3f " , Alpha_manipulated);
+
 
     Alpha_manipulated = getMinMax(Alpha_manipulated, Alpha_max, Alpha_min);
 
     alpha_msg.data = Alpha_manipulated;
+
+    printf(" G_Alpha: %3.3f \n", Alpha_manipulated); 
 
     alpha_pub.publish(alpha_msg);
 

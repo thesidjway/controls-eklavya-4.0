@@ -4,7 +4,7 @@
 #include <cmath>
 
 using namespace ros;
-
+using namespace std;
 
 ModeSwitcher::ModeSwitcher() :
 	finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock() 
@@ -30,6 +30,8 @@ ModeSwitcher::ModeSwitcher() :
 void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main callback function for xbox data
 {
 
+	cout<< "??????????????" << endl;
+
 	int manual_button=joy->buttons[4];
 	int auto_button=joy->buttons[5];
 	
@@ -38,7 +40,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 	if(auto_button==1 && manual_button==0 )
 	{
 
-
+		std::cout<< "***************" <<std::endl;
 		xbox_flag_lock.lock();
 		xboxflag=0;
 		xbox_flag_lock.unlock();
@@ -48,12 +50,15 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 
 	else if(manual_button==1 && auto_button==0)
 	{
+		xbox_flag_lock.lock();
+		std::cout<< "---------------" <<std::endl;
+		
 		xboxflag=1;
 		xbox_flag_lock.unlock();
 
 	
 	}
-		xbox_flag_lock.lock();
+				xbox_flag_lock.lock();
                 int temp_flag1=xboxflag;
                 xbox_flag_lock.unlock();
 
@@ -67,6 +72,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 		Vx_Xbox_lock.lock();
 		
 		Vx_Xbox=( rescaled_val * Max_Xbox_Vx);
+
 		Vx_Xbox_lock.unlock();
 	
  
@@ -116,9 +122,9 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 
  void ModeSwitcher::publish(int argc, char** argv){
 
-	ros::init(argc, argv, "modeswitcher");
+	ros::init(argc, argv, "modeswitching_node");
 	ros::NodeHandle nh_;
-	ros::Rate loop_rate(20);
+	ros::Rate loop_rate(10);
 	
 	ros::Subscriber joy_sub;
 	ros::Subscriber plan_sub;  
@@ -126,7 +132,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
   	joy_sub = nh_.subscribe <sensor_msgs::Joy> ("joy", 1000 , &ModeSwitcher::joyCallback , this); 
   	plan_sub = nh_.subscribe <geometry_msgs::Twist> ("cmd_vel", 1000 , &ModeSwitcher::planCallback, this); 
   	
-	nh_.getParam("/modeswitcher/maxvelocity", Max_Xbox_Vx);
+	nh_.getParam("/modeswitching_node/maxvelocity", Max_Xbox_Vx);
 	nh_.getParam("d",d);
 	nh_.getParam("Alpha_Max",maxalpha);
 	nh_.getParam("Alpha_Min",minalpha);
@@ -136,27 +142,26 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 
 	while(ros::ok)
 	{	
-		
-	
+			
 		xbox_flag_lock.lock();
-                int temp_flag=xboxflag;
-                xbox_flag_lock.unlock();
+        int temp_flag=xboxflag;
+		xbox_flag_lock.unlock();
 
 		if(temp_flag==1)
 		{
-				cout<<"Sending Xbox Data Right Now";
+			cout<<"XXXX "<< "Vx from xbox: "<< Vx_Xbox <<" Wx from xbox: "<< W_xbox<<std::endl;
 			cout<<endl;
 				
 				Vx_Xbox_lock.lock();
 			 
 				finaltwist.linear.x=Vx_Xbox;
-				cout<<"Vx from xbox: "<<Vx_Xbox;
+			//	cout;
 				cout<<endl;
 				Vx_Xbox_lock.unlock();
 				
 				W_Xbox_lock.lock();
 				finaltwist.angular.z= W_xbox;
-				cout<<"Wx from xbox: "<<W_xbox;
+			//	cout;
 				cout<<endl;
 				W_Xbox_lock.unlock();
 				
@@ -165,11 +170,11 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 		
 		else if(temp_flag==0)
 		{
-			cout<<"Sending Planner Data Right Now";
-			cout<<endl;
+			cout<<"PPP"<<" Vx from planner: "<< Vx_Planner <<" W from planner: "<<W_Planner <<std::endl;
+			
 				Vx_planner_lock.lock();
 					finaltwist.linear.x=Vx_Planner;
-					cout<<"Vx from planner: "<<Vx_Planner;
+			//		cout;
                                 cout<<endl;
 
 				Vx_planner_lock.unlock();
@@ -177,7 +182,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 				W_planner_lock.lock();
 					finaltwist.linear.x=W_Planner;
 					finaltwist.linear.x=Vx_Planner;
-                                        cout<<"W from planner: "<<W_Planner;
+                //    cout;
 					cout<<endl;
 
 				W_planner_lock.unlock();

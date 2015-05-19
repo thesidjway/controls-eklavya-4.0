@@ -74,7 +74,7 @@ int main (int argc, char** argv)
 		rw_vel=0;
 	
 
-	std::cout << "vel_L = " << lw_vel << " vel_R = "<< rw_vel <<std::endl;
+//	std::cout << "vel_L = " << lw_vel << " vel_R = "<< rw_vel <<std::endl;
 	
 	msg.left_vel = lw_vel;	
 	msg.right_vel = rw_vel;

@@ -65,8 +65,6 @@ void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
 void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 {
-	cout<<"\n Vx_PID: Encoder Reading Received \n"<<std::endl;
-
   Vl_Vr_a_lock.lock();
   Vl_a = msg->left_vel;
   Vr_a = msg->right_vel;
@@ -106,6 +104,8 @@ void VxPid::implementPid(int argc, char** argv)
 
 	ros::Rate loop_rate(vx_pid_loop_rate);
 
+	pwm_signal_pin.setDutyPercent(0);
+
   while (ros::ok())
   {
 	/*
@@ -122,29 +122,36 @@ void VxPid::implementPid(int argc, char** argv)
     Vx_t_lock.lock();
     Alpha_lock.lock();
     double Vx_error = Vx_t - Vx_a;
-    cout << "VXT= "<< Vx_t <<", VXA  " << Vx_a << ", error = "<< Vx_error << std::endl; 
+
+    cout << " "<<  <<"  " <<  << " error: "<< ; 
+	
+	printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
+    
+	printf("VT: %3.3f VA: %3.3f  error: %3.3f ", Vx_t , Vx_a , Vx_error); 
+
     Alpha_lock.unlock();
     Vx_t_lock.unlock();
     Vl_Vr_a_lock.unlock();
+
+    
 
     Vx_error_diff = Vx_error_old - Vx_error;
     Vx_error_sum += Vx_error;
     Vx_error_old = Vx_error;
 
-    Vx_error_integral = getMinMax(Vx_error_sum * Ki_Vx, PWM_max_percent, PWM_min_percent);
+    Vx_error_integral = getMinMax ( Vx_error_sum * Ki_Vx , PWM_max_percent, -PWM_max_percent);
 
     PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx;
 
-    cout<< "current PWM = " << PWM_Duty_Cycle << std::endl;
+	printf( " C_PWM: %3.3f " , PWM_Duty_Cycle);
 
     PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
 
     pwm_signal_pin.setDutyPercent(PWM_Duty_Cycle);
 
-	cout<<"P = " << (Vx_error) * Kp_Vx << ", I = " << (Vx_error_integral) << ", D = " << (Vx_error_diff) * Kd_Vx << std::endl; 
+	printf(" P: %3.3f  I: %3.3f D: %3.3f ", (Vx_error) * Kp_Vx , (Vx_error_integral) , (Vx_error_diff) * Kd_Vx ); 
 
-	cout<< "current PWM = " << PWM_Duty_Cycle << std::endl;
-
+	printf(" G_PWM: %3.3f \n", PWM_Duty_Cycle); 
     ros::spinOnce();
 
     loop_rate.sleep();

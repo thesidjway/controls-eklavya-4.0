@@ -10,7 +10,10 @@ void commandStearingAngleCallback(const std_msgs::Float64::ConstPtr& msg) {
 	
 	int angle = int(msg->data);
 	ROS_INFO("Received angle : %d", angle);
-	srv.request.stearing_angle = msg->data ;
+	
+	int scaled_val= msg->data * (1000.0/90);
+	
+	srv.request.stearing_angle = scaled_val ;
 
 	if (client->call(srv))
 	{
