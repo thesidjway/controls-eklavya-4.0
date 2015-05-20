@@ -33,7 +33,10 @@ private:
 
 	double W_error_sum, W_error_integral, W_error_diff, W_error_old;
 	int w_pid_loop_rate;
-
+	
+	double count_max;
+	double count_min;
+	
 public:
 
 	WPid();

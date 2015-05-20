@@ -1,7 +1,9 @@
 #include <iostream>
 #include "vx_pid.h"
+#include "BlackUART.h"
 
 using namespace std;
+
 
 VxPid::VxPid() :
     Vx_t_lock(), Alpha_lock(), Vl_Vr_a_lock()
@@ -74,6 +76,7 @@ void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 
 void VxPid::implementPid(int argc, char** argv)
 {
+	
 
 	ros::init(argc, argv, "vxpid_node");
 
@@ -85,6 +88,15 @@ void VxPid::implementPid(int argc, char** argv)
 																		this);
 
 
+	BlackLib::BlackUART  Uart1(BlackLib::UART1,
+                               BlackLib::Baud38400,
+                               BlackLib::ParityEven,
+                               BlackLib::StopOne,
+                               BlackLib::Char8 );
+
+	Uart1.open( BlackLib::ReadWrite | BlackLib::NonBlock );
+	std::string writeToUart1;
+    std::ostringstream os1;
 
 	nh_.getParam("/vxpid_node/Kp_Vx", Kp_Vx);
 	nh_.getParam("/vxpid_node/Ki_Vx", Ki_Vx);
@@ -98,26 +110,12 @@ void VxPid::implementPid(int argc, char** argv)
 	// nh_.getParam("d", d); 					       // Front wheel center to rear wheel line center distance
 	// nh_.getParam("r", r);					       // Rear wheel center to center of line joining distance
 
-	BlackLib::BlackPWM pwm_signal_pin(BlackLib::EHRPWM2A);
-
-	pwm_signal_pin.setPeriodTime(PWM_PERIOD_TIME);
-
+	
 	ros::Rate loop_rate(vx_pid_loop_rate);
 
-	pwm_signal_pin.setDutyPercent(0);
 
   while (ros::ok())
   {
-	/*
-     Vl_Vr_a_lock.lock();
-     Vx_t_lock.lock();
-     Alpha_lock.lock();
-     double Vs_error = Vs_t - Vs_a;
-     Alpha_lock.unlock();
-     Vx_t_lock.unlock();	   	
-     Vl_Vr_a_lock.unlock();
-     */
-
     Vl_Vr_a_lock.lock();
     Vx_t_lock.lock();
     Alpha_lock.lock();
@@ -144,12 +142,18 @@ void VxPid::implementPid(int argc, char** argv)
 	printf( " C_PWM: %3.3f " , PWM_Duty_Cycle);
 
     PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
+	
+	
+	os1.str("");
+    os1.clear();
+    os1 << (int) PWM_Duty_Cycle << "\n";
+    writeToUart1 = os1.str();
+    Uart1 << writeToUart1;
 
-    pwm_signal_pin.setDutyPercent(PWM_Duty_Cycle);
-
+   
 	printf(" P: %3.3f  I: %3.3f D: %3.3f ", (Vx_error) * Kp_Vx , (Vx_error_integral) , (Vx_error_diff) * Kd_Vx ); 
 
-	printf(" G_PWM: %3.3f ||||| ", PWM_Duty_Cycle); 
+	printf(" G_PWM: %3.3f \n ", (int)PWM_Duty_Cycle); 
     ros::spinOnce();
 
     loop_rate.sleep();
@@ -159,11 +163,12 @@ void VxPid::implementPid(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+	
+  
+	VxPid * vxPid = new VxPid();
 
-  VxPid * vxPid = new VxPid();
-
-  vxPid->implementPid(argc, argv);
-
-  delete vxPid;
+	vxPid->implementPid(argc, argv);
+	
+	delete vxPid;
 
 }

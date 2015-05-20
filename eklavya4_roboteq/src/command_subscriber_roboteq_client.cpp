@@ -6,14 +6,15 @@ ros::NodeHandle *n;
 ros::ServiceClient *client;
 
 void commandStearingAngleCallback(const std_msgs::Float64::ConstPtr& msg) {
+
 	eklavya4_roboteq::SetSpeed srv;
 	
 	int angle = int(msg->data);
 	ROS_INFO("Received angle : %d", angle);
 	
-	int scaled_val= msg->data * (1000.0/90);
+	//int scaled_val= msg->data * (1000.0/90);
 	
-	srv.request.stearing_angle = scaled_val ;
+	srv.request.stearing_angle = angle;
 
 	if (client->call(srv))
 	{

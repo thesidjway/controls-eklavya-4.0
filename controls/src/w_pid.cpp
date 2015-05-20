@@ -20,6 +20,9 @@ WPid::WPid() :
 	r=0; d=0;
 	W_error_sum=0; W_error_integral=0; W_error_diff=0; W_error_old=0;
 	w_pid_loop_rate=10;
+	
+	count_max=1000;
+	count_min=-1000;
 
 }
 
@@ -75,6 +78,8 @@ void WPid::implementPid(int argc, char** argv)
 
   pid_nh_.getParam("Alpha_max", Alpha_max);
   pid_nh_.getParam("Alpha_min", Alpha_min);
+  pid_nh_.getParam("count_max", count_max);
+  pid_nh_.getParam("cont_min", count_min);
   pid_nh_.getParam("d", d); // Front wheel center to rear wheel line center distance
   pid_nh_.getParam("r", r); // Rear wheel center to center of line joining distance
 
@@ -104,13 +109,7 @@ void WPid::implementPid(int argc, char** argv)
     W_error_sum += W_error;
     W_error_old = W_error;
 
-    W_error_integral = getMinMax((W_error_sum) * Ki_W , Alpha_max, - Alpha_max);
-
-    W_error_diff = W_error_old - W_error;
-    W_error_sum += W_error;
-    W_error_old = W_error;
-
-    W_error_integral = getMinMax((W_error_sum) * Ki_W, Alpha_max, - Alpha_max);
+    W_error_integral = getMinMax((W_error_sum) * Ki_W , count_max , -count_max);
 
     double Alpha_manipulated = (W_error) * Kp_W + (W_error_integral) + (W_error_diff) * Kd_W;
 
@@ -121,7 +120,7 @@ void WPid::implementPid(int argc, char** argv)
 	printf( " C_Alpha: %3.3f " , Alpha_manipulated);
 
 
-    Alpha_manipulated = getMinMax(Alpha_manipulated, Alpha_max, Alpha_min);
+    Alpha_manipulated = getMinMax(Alpha_manipulated, count_max , count_min);
 
     alpha_msg.data = Alpha_manipulated;
 
