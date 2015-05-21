@@ -7,7 +7,7 @@ using namespace ros;
 using namespace std;
 
 ModeSwitcher::ModeSwitcher() :
-	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock() 
+	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock(),Vy_Xbox_lock()
 {
 
 	d=0.7;//distance between steering and the back tires in meters
@@ -18,6 +18,7 @@ ModeSwitcher::ModeSwitcher() :
 
 	W_xbox=0;
 	Vx_Xbox=0;
+	Vy_Xbox=0.0;
 
 	W_Planner=0;
 	Vx_Planner=0;
@@ -25,14 +26,11 @@ ModeSwitcher::ModeSwitcher() :
 	xboxflag=0; //flag to tell whether xbox is currently sending data or not
 	
 	Max_Xbox_Vx=2.0;
-
 	w_max=0;
 	w_min=0;	
 	Vl_a = 0;
 	Vr_a = 0;
-	
 }
-
 void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main callback function for xbox data
 {
 
@@ -71,7 +69,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 	
 	if (temp_flag1==1){
 
- 		float val = joy->axes[5];       //Reading from the right top trigger
+ 		/*float val = joy->axes[5];       //Reading from the right top trigger
 
 		float rescaled_val =1-((val + 1.0 )/2); 
 
@@ -79,14 +77,44 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 		
 		Vx_Xbox=( rescaled_val * Max_Xbox_Vx);
 
-		Vx_Xbox_lock.unlock();
+		Vx_Xbox_lock.unlock();*/
 	
  
 		float alpha_axes=joy->axes[2];
 
 		W_xbox= w_max + ((alpha_axes-1)/2)*( abs(w_min)+abs(w_max));
 
-/*
+
+		float val0=joy->buttons[0],val2=joy->buttons[2];
+		float val3=joy->buttons[3],val1=joy->buttons[1];
+		
+		
+		if(val2==1 && val0==0)
+		{
+			Vx_Xbox_lock.lock();
+			Vx_Xbox+=0.02;
+			Vx_Xbox_lock.unlock();
+		}
+		else if(val0==1 && val2==0)
+		{
+			Vx_Xbox_lock.lock();
+			Vx_Xbox-=0.02;
+			Vx_Xbox_lock.unlock();
+		}
+		if(val3==1)
+		{
+			Vx_Xbox_lock.lock();
+			Vx_Xbox=0.0;
+			Vx_Xbox_lock.unlock();
+		}
+		if(val1==1)
+		{
+			Vy_Xbox_lock.lock();
+                        Vy_Xbox=-0.0;
+                        Vy_Xbox_lock.unlock();
+		}
+/*	
+ *		
 		alpha= maxalpha + ((alpha_axes-1)/2)*( abs(minalpha)+abs(maxalpha)); 
 
 		
@@ -163,6 +191,9 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 
 	while(ros::ok)
 	{	
+	Vy_Xbox=0.0;
+	ros::spinOnce();
+
 			
 		xbox_flag_lock.lock();
         int temp_flag=xboxflag;
@@ -174,12 +205,13 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 			cout<<endl;
 				
 				Vx_Xbox_lock.lock();
-			 
+			 	Vy_Xbox_lock.lock();
+				finaltwist.linear.y=Vy_Xbox;
 				finaltwist.linear.x=Vx_Xbox;
 			//	cout;
 				cout<<endl;
 				Vx_Xbox_lock.unlock();
-				
+				Vy_Xbox_lock.unlock();
 				W_Xbox_lock.lock();
 				finaltwist.angular.z= W_xbox;
 			//	cout;
@@ -210,7 +242,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 
 		}
 
-		ros::spinOnce();
+
 		loop_rate.sleep();
 	}
  }

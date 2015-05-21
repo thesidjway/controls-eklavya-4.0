@@ -31,7 +31,7 @@ int i;
         writeToUart1 = os1.str();
         Uart1 << writeToUart1;
 	i+=5;
-	usleep(1000);
+	usleep(5000);
 	if(i==255)
 	i=0;
     }

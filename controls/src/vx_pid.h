@@ -33,7 +33,7 @@ private:
 	//double r;		  // Rear wheel center to center of line joining distance	
 
 	double Vr_a , Vl_a;
-	double Vx_t;   
+	double Vx_t,Vy_t;   
 	double Alpha_a;
 	double Kp_Vx, Ki_Vx, Kd_Vx;
 	double Vx_error_sum, Vx_error_diff, Vx_error_old , Vx_error_integral;
@@ -45,7 +45,7 @@ private:
 	
 	int vx_pid_loop_rate;
 	
-	std::mutex Vx_t_lock , Alpha_lock , Vl_Vr_a_lock;
+	std::mutex Vx_t_lock , Alpha_lock , Vl_Vr_a_lock, Vy_t_lock;
 
 public:
 

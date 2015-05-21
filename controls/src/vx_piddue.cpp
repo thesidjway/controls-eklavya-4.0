@@ -11,8 +11,7 @@ VxPid::VxPid() :
 
 	Vr_a=0;
 	Vl_a=0;
-	Vx_t=0;
-	Vy_t=+0.0;   
+	Vx_t=0;   
 	Alpha_a=0;
 	Kp_Vx=0;
 	Ki_Vx=0;
@@ -45,15 +44,12 @@ double VxPid::getMinMax(int Cur_Var, int max, int min)
 void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
 
-  Vy_t_lock.lock();
   Vx_t_lock.lock();
   Alpha_lock.lock();
   Vx_t = (msg->linear.x);
-  Vy_t=(msg->linear.y);
   //	Vs_t= (msg->linear.x )/( cos( (Alpha_a * PI)/180));
   Alpha_lock.unlock();
   Vx_t_lock.unlock();
-  Vy_t_lock.unlock();
 
 }
 
@@ -125,20 +121,15 @@ void VxPid::implementPid(int argc, char** argv)
     Alpha_lock.lock();
     double Vx_error = Vx_t - Vx_a;
 
-float vxtprinter,vxaprinter,vxerrorprinter; 
-vxtprinter=Vx_t;
-vxaprinter=Vx_a;
-vxerrorprinter=Vx_error;
+ 	printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
+    
+	printf("VT: %3.3f VA: %3.3f  error: %3.3f ", Vx_t , Vx_a , Vx_error); 
 
     Alpha_lock.unlock();
     Vx_t_lock.unlock();
     Vl_Vr_a_lock.unlock();
 
-
-
-     printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
-    float percerror=(vxerrorprinter/vxtprinter)*100.0;
-        printf("VT: %3.3f VA: %3.3f  error: %3.3f ", vxtprinter , vxaprinter , percerror);
+    
 
     Vx_error_diff = Vx_error_old - Vx_error;
     Vx_error_sum += Vx_error;
@@ -146,19 +137,16 @@ vxerrorprinter=Vx_error;
 
     Vx_error_integral = getMinMax ( Vx_error_sum * Ki_Vx , PWM_max_percent, -PWM_max_percent);
 
-    PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx + 1400;
+    PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx;
 
 	printf(" P: %3.3f  I: %3.3f D: %3.3f ", (Vx_error) * Kp_Vx , (Vx_error_integral) , (Vx_error_diff) * Kd_Vx ); 
 
-	if(Vy_t<=0.0)
-	{
-	Vx_error_integral=0;
-	}
-//	printf( " C_PWM: %3.3f " , PWM_Duty_Cycle);
+
+	printf( " C_PWM: %3.3f " , PWM_Duty_Cycle);
 
     PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
-
-
+	
+	
 	os1.str("");
     os1.clear();
     os1 << (int) PWM_Duty_Cycle << "\n";

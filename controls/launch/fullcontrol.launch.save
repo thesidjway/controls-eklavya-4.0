@@ -20,9 +20,9 @@
 
 
 <node pkg="controls" type="vxpid_node" name="vxpid_node" respawn="true" output="screen">
-	<param name="Kp_Vx" value="200"/>
-	<param name="Ki_Vx" value="20.0"/>
-	<param name="Kd_Vx" value="50.0"/>
+	<param name="Kp_Vx" value="1200"/>
+	<param name="Ki_Vx" value="200.0"/>
+	<param name="Kd_Vx" value="05.0"/>
 	<param name="PWM_min" value="1400"/>
 	<param name="PWM_max" value="1950"/>
 	<param name="PWM_PERIOD_TIME" value="50000000"/>

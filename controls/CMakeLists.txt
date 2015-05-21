@@ -52,7 +52,7 @@ add_dependencies(encoders roscpp std_msgs geometry_msgs controls_msgs_gencpp )
 #target_link_libraries(overriding_node ${catkin_LIBRARIES} ) 
 #add_dependencies(overriding_node roscpp rospy joy sensor_msgs std_msgs geometry_msgs diagnostic_updater)
 
-add_executable(modeswitching_node src/modeswitcher.cpp)
+add_executable(modeswitching_node src/modeswitcherdue.cpp)
 target_link_libraries(modeswitching_node ${catkin_LIBRARIES} )
 add_dependencies(modeswitching_node roscpp rospy joy sensor_msgs std_msgs geometry_msgs diagnostic_updater)
 

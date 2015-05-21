@@ -8,6 +8,10 @@
 #include <geometry_msgs/Twist.h>
 #include <iostream>
 #include "modeswitcher.h"
+#include <controls_msgs/encoder_msg.h>
+
+
+#define Vx_a ( (Vl_a+Vr_a)/2 ) 
 
 using namespace std; 
 using namespace ros;
@@ -19,22 +23,30 @@ private:
 	double d;//distance between steering and the back tires in meters
 	
 	double maxalpha,minalpha;
-
-	std::mutex Vx_Xbox_lock , W_Xbox_lock , Vx_planner_lock , W_planner_lock , xbox_flag_lock;
+	double w_max,w_min;
+	
+	std::mutex Vx_Xbox_lock ,Vy_Xbox_lock, Vl_Vr_a_lock, W_Xbox_lock , Vx_planner_lock , W_planner_lock , xbox_flag_lock;
 
 	float alpha;
 
 	float W_xbox;
 	float Vx_Xbox;
+	float Vy_Xbox;
 
 	float W_Planner;
 	float Vx_Planner;
+	
+	
+	float Vl_a;
+	float Vr_a ;
 	
 	double  Max_Xbox_Vx;
 	//node handler for xbox data
 	int xboxflag; //flag to tell whether xbox is currently sending data or not
 
 	geometry_msgs::Twist finaltwist ;
+	
+	
 	
 public:
 
@@ -45,6 +57,9 @@ public:
 	void planCallback(const geometry_msgs::Twist::ConstPtr& pose);
 	
 	void publish(int argc, char** argv);
+	
+	void encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg);
+
 };
 
 #endif
