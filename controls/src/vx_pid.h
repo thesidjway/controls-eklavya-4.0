@@ -36,7 +36,7 @@ private:
 	double Vx_t,Vy_t;   
 	double Alpha_a;
 	double Kp_Vx, Ki_Vx, Kd_Vx;
-	double Vx_error_sum, Vx_error_diff, Vx_error_old , Vx_error_integral;
+	double Vx_error_diff, Vx_error_old , Vx_error_integral;
 	double PWM_Duty_Cycle;
 	//int    Vs_PID_loop_rate;
 

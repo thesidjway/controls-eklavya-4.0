@@ -5,9 +5,7 @@
 using namespace std;
 
 
-VxPid::VxPid() :
-    Vx_t_lock(), Alpha_lock(), Vl_Vr_a_lock()
-{
+VxPid::VxPid() : Vx_t_lock(), Alpha_lock(), Vl_Vr_a_lock() {
 
 	Vr_a=0;
 	Vl_a=0;
@@ -17,7 +15,6 @@ VxPid::VxPid() :
 	Kp_Vx=0;
 	Ki_Vx=0;
 	Kd_Vx=0;
-	Vx_error_sum=0; 
 	Vx_error_diff=0;
 	Vx_error_old=0;
 	Vx_error_integral=0;
@@ -31,29 +28,30 @@ VxPid::VxPid() :
 	
 }
 
-double VxPid::getMinMax(int Cur_Var, int max, int min)
-{
+double VxPid::getMinMax(int Cur_Var, int max, int min) {
 
-  if (Cur_Var > max)
-    return max;
-  else if (Cur_Var < min)
-    return min;
-  else
-    return Cur_Var;
+    if (Cur_Var > max) {
+		return max;
+	} else {
+		if (Cur_Var < min) {
+			return min;
+		} else {
+			return Cur_Var;
+		}
+	}
 }
 
-void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
-{
+void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
-  Vy_t_lock.lock();
-  Vx_t_lock.lock();
-  Alpha_lock.lock();
-  Vx_t = (msg->linear.x);
-  Vy_t=(msg->linear.y);
-  //	Vs_t= (msg->linear.x )/( cos( (Alpha_a * PI)/180));
-  Alpha_lock.unlock();
-  Vx_t_lock.unlock();
-  Vy_t_lock.unlock();
+    Vy_t_lock.lock();
+    Vx_t_lock.lock();
+	Alpha_lock.lock();
+	Vx_t = (msg->linear.x);
+	Vy_t=(msg->linear.y);
+	//	Vs_t= (msg->linear.x )/( cos( (Alpha_a * PI)/180));
+	Alpha_lock.unlock();
+	Vx_t_lock.unlock();
+	Vy_t_lock.unlock();
 
 }
 
@@ -69,12 +67,11 @@ void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
  }
  */
 
-void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
-{
-  Vl_Vr_a_lock.lock();
-  Vl_a = msg->left_vel;
-  Vr_a = msg->right_vel;
-  Vl_Vr_a_lock.unlock();
+void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg) {
+	Vl_Vr_a_lock.lock();
+	Vl_a = msg->left_vel;
+	Vr_a = msg->right_vel;
+	Vl_Vr_a_lock.unlock();
 
 }
 
@@ -118,66 +115,64 @@ void VxPid::implementPid(int argc, char** argv)
 	ros::Rate loop_rate(vx_pid_loop_rate);
 
 
-  while (ros::ok())
-  {
-    Vl_Vr_a_lock.lock();
-    Vx_t_lock.lock();
-    Alpha_lock.lock();
-    double Vx_error = Vx_t - Vx_a;
+	while (ros::ok()) {
+		Vl_Vr_a_lock.lock();
+		Vx_t_lock.lock();
+		Alpha_lock.lock();
+		double Vx_error = Vx_t - Vx_a;
 
-float vxtprinter,vxaprinter,vxerrorprinter; 
-vxtprinter=Vx_t;
-vxaprinter=Vx_a;
-vxerrorprinter=Vx_error;
+		float vxtprinter,vxaprinter,vxerrorprinter; 
+		vxtprinter=Vx_t;
+		vxaprinter=Vx_a;
+		vxerrorprinter=Vx_error;
 
-    Alpha_lock.unlock();
-    Vx_t_lock.unlock();
-    Vl_Vr_a_lock.unlock();
+		Alpha_lock.unlock();
+		Vx_t_lock.unlock();
+		Vl_Vr_a_lock.unlock();
 
+		printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
+		float percerror=(vxerrorprinter/vxtprinter)*100.0;
+		printf("VT: %3.3f VA: %3.3f  error: %3.3f ", vxtprinter , vxaprinter , percerror);
 
+		Vx_error_diff = Vx_error_old - Vx_error;
+		Vx_error_integral +=  Vx_error*Ki_Vx;
+		Vx_error_old = Vx_error;
 
-     printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
-    float percerror=(vxerrorprinter/vxtprinter)*100.0;
-        printf("VT: %3.3f VA: %3.3f  error: %3.3f ", vxtprinter , vxaprinter , percerror);
+		if (Vx_error_integral >= PWM_max_percent) {
+			Vx_error_integral = PWM_max_percent;
+		} else if (Vx_error_integral <= - PWM_max_percent) {
+			Vx_error_integral = - PWM_max_percent;
+		}
 
-    Vx_error_diff = Vx_error_old - Vx_error;
-    Vx_error_sum += Vx_error;
-    Vx_error_old = Vx_error;
+		PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx + 1400;
+		printf("Vyt is %f",Vy_t);
 
-    Vx_error_integral = getMinMax ( Vx_error_sum * Ki_Vx , PWM_max_percent, -PWM_max_percent);
+		if(std::signbit(Vy_t)) {
+			Vx_error_integral = 0;
+        } 
 
-    PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx + 1400;
+		printf(" P: %3.3f  I: %3.3f D: %3.3f ", (Vx_error) * Kp_Vx , (Vx_error_integral) , (Vx_error_diff) * Kd_Vx ); 
 
-	printf(" P: %3.3f  I: %3.3f D: %3.3f ", (Vx_error) * Kp_Vx , (Vx_error_integral) , (Vx_error_diff) * Kd_Vx ); 
-
-	if(Vy_t<=0.0)
-	{
-	Vx_error_integral=0;
-	}
 //	printf( " C_PWM: %3.3f " , PWM_Duty_Cycle);
 
-    PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
+		PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
 
+		os1.str("");
+		os1.clear();
+		os1 << (int) PWM_Duty_Cycle << "\n";
+		writeToUart1 = os1.str();
+		Uart1 << writeToUart1;
+		usleep(1000);
+   	
+		printf(" G_PWM: %3.3f \n ", PWM_Duty_Cycle); 
 
-	os1.str("");
-    os1.clear();
-    os1 << (int) PWM_Duty_Cycle << "\n";
-    writeToUart1 = os1.str();
-    Uart1 << writeToUart1;
-	usleep(1000);
-   
-	
-	printf(" G_PWM: %3.3f \n ", PWM_Duty_Cycle); 
-    ros::spinOnce();
+		ros::spinOnce();
 
-    loop_rate.sleep();
-
-  }
+		loop_rate.sleep();
+	}
 }
 
-int main(int argc, char** argv)
-{
-	
+int main(int argc, char** argv) {
   
 	VxPid * vxPid = new VxPid();
 

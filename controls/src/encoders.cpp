@@ -1,6 +1,7 @@
 #include "eqep.h"
 #include <string>
 #include "ros/ros.h"
+#include "std_msgs/Float64.h"
 #include "controls_msgs/encoder_msg.h"
 #include <iostream>
 
@@ -16,8 +17,10 @@ using namespace std;
 int main (int argc, char** argv)
 {
     ros::init(argc,argv,"encoders");
-    ros::NodeHandle n;
+   ros::NodeHandle n;
 	ros::Publisher pub_encoder = n.advertise<controls_msgs::encoder_msg>("encoders",1000);
+	 ros::Publisher pub_va = n.advertise<std_msgs::Float64>("va",1000);
+
 	ros::Rate loop_rate(5);
 
 	
@@ -61,6 +64,7 @@ int main (int argc, char** argv)
 
     
     controls_msgs::encoder_msg msg;
+    std_msgs::Float64 vactual;
 
 	while(ros::ok())
     {
@@ -79,8 +83,10 @@ int main (int argc, char** argv)
 	msg.left_vel = lw_vel;	
 	msg.right_vel = rw_vel;
 
-
+	vactual.data=(lw_vel+rw_vel)/2;
 	pub_encoder.publish(msg);
+        pub_va.publish(vactual);
+
 	ros::spinOnce();  
 
 	loop_rate.sleep();  

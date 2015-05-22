@@ -6,6 +6,7 @@
 #include <mutex>
 #include <sensor_msgs/Joy.h>
 #include <geometry_msgs/Twist.h>
+#include "std_msgs/Float64.h"
 #include <iostream>
 #include "modeswitcher.h"
 #include <controls_msgs/encoder_msg.h>
@@ -45,6 +46,7 @@ private:
 	int xboxflag; //flag to tell whether xbox is currently sending data or not
 
 	geometry_msgs::Twist finaltwist ;
+	std_msgs::Float64 finalvt;
 	
 	
 	

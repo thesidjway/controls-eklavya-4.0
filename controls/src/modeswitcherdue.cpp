@@ -7,7 +7,7 @@ using namespace ros;
 using namespace std;
 
 ModeSwitcher::ModeSwitcher() :
-	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock(),Vy_Xbox_lock()
+	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock(),Vy_Xbox_lock(),finalvt()
 {
 
 	d=0.7;//distance between steering and the back tires in meters
@@ -92,13 +92,13 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 		if(val2==1 && val0==0)
 		{
 			Vx_Xbox_lock.lock();
-			Vx_Xbox+=0.02;
+			Vx_Xbox+=0.1;
 			Vx_Xbox_lock.unlock();
 		}
 		else if(val0==1 && val2==0)
 		{
 			Vx_Xbox_lock.lock();
-			Vx_Xbox-=0.02;
+			Vx_Xbox-=0.1;
 			Vx_Xbox_lock.unlock();
 		}
 		if(val3==1)
@@ -110,8 +110,8 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 		if(val1==1)
 		{
 			Vy_Xbox_lock.lock();
-                        Vy_Xbox=-0.0;
-                        Vy_Xbox_lock.unlock();
+            Vy_Xbox = - 0.0;
+            Vy_Xbox_lock.unlock();
 		}
 /*	
  *		
@@ -186,14 +186,14 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 	nh_.getParam("w_max",w_max);
 	nh_.getParam("w_min",w_min);
 	
-
+	
 	ros::Publisher send_twist = nh_.advertise<geometry_msgs::Twist>("target_pose", 5);
+	ros::Publisher send_vt = nh_.advertise<std_msgs::Float64>("vt", 5);
 
 	while(ros::ok)
 	{	
-	Vy_Xbox=0.0;
-	ros::spinOnce();
-
+		Vy_Xbox = 0.0;
+		ros::spinOnce();
 			
 		xbox_flag_lock.lock();
         int temp_flag=xboxflag;
@@ -206,6 +206,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 				
 				Vx_Xbox_lock.lock();
 			 	Vy_Xbox_lock.lock();
+				finalvt.data=Vx_Xbox;
 				finaltwist.linear.y=Vy_Xbox;
 				finaltwist.linear.x=Vx_Xbox;
 			//	cout;
@@ -219,6 +220,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 				W_Xbox_lock.unlock();
 				
 				send_twist.publish(finaltwist);
+				send_vt.publish(finalvt);
 		}
 		
 		else if(temp_flag==0)
@@ -227,6 +229,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 			
 				Vx_planner_lock.lock();
 					finaltwist.linear.x=Vx_Planner;
+					finalvt.data=Vx_Planner;
 			//		cout;
                                 cout<<endl;
 
@@ -237,9 +240,10 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 					finaltwist.linear.x=Vx_Planner;
                 //    cout;
 					cout<<endl;
-
+			
 				W_planner_lock.unlock();
-
+				send_twist.publish(finaltwist);
+				send_vt.publish(finalvt);
 		}
 
 

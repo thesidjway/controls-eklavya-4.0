@@ -75,6 +75,8 @@ ros::init(argc, argv,"W_PID");
   ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<controls::encoder_msg>("encoders" , 5 , Encoder_Callback);
  
   ros::Publisher alpha_pub = pid_nh_.advertise<std_msgs::Float64>("alpha_val_manipulated", 100); 
+  ros::Publisher wa_pub = pid_nh_.advertise<std_msgs::Float64>("wa", 100); 
+  ros::Publisher wt_pub = pid_nh_.advertise<std_msgs::Float64("wt", 100); 
 
 
 pid_nh_.getParam("/W_PID/Kp_W", Kp_W);
@@ -91,12 +93,16 @@ pid_nh_.getParam("r", r);					// Rear wheel center to center of line joining dis
 	  ros::Rate loop_rate(W_PID_loop_rate);
 
   std_msgs::Float64 alpha_msg;
+  std_msgs::Float64 wa_msg;
+  std_msgs::Float64 wt_msg;
   
   while( ros::ok() ){
   
 	Vl_Vr_a_lock.lock();
 		W_t_Lock.lock();
 			double W_error = W_t - W_a;
+			wa_msg.data=W_a;
+			wt_msg.data=W_t;
 		W_t_Lock.unlock();   	
 	Vl_Vr_a_lock.unlock();
 
@@ -124,6 +130,11 @@ pid_nh_.getParam("r", r);					// Rear wheel center to center of line joining dis
 	alpha_msg.data = Alpha_manipulated;
 
 	alpha_pub.publish(alpha_msg);
+	
+
+	wa_pub.publish(wa_msg);
+	
+	wt_pub.publish(wt_msg);
 	
 	ros::spinOnce();
 	loop_rate.sleep();

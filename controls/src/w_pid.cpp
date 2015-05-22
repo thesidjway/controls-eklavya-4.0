@@ -70,7 +70,8 @@ void WPid::implementPid(int argc, char** argv)
                                                                                 this);
 
   ros::Publisher alpha_pub = pid_nh_.advertise<std_msgs::Float64>("alpha_val_manipulated", 100);
-
+  ros::Publisher wa_pub = pid_nh_.advertise<std_msgs::Float64>("wa", 100);
+  ros::Publisher wt_pub = pid_nh_.advertise<std_msgs::Float64>("wt", 100);
   pid_nh_.getParam("/wpid_node/Kp_W", Kp_W);
   pid_nh_.getParam("/wpid_node/Ki_W", Ki_W);
   pid_nh_.getParam("/wpid_node/Kd_W", Kd_W);
