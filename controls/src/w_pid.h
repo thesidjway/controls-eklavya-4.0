@@ -12,7 +12,7 @@
 #include <math.h>
 #include <mutex>
 
-#define W_a  ( (Vr_a-Vl_a)/(2*r) )
+#define W_a  ( (Vr_a - Vl_a)/(2*r) )/(  (Vr_a + Vl_a)/2 )
 
 class WPid {
 

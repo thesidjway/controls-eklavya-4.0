@@ -80,14 +80,12 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 		Vx_Xbox_lock.unlock();*/
 	
  
-		float alpha_axes=joy->axes[2];
-
-		W_xbox= w_max + ((alpha_axes-1)/2)*( abs(w_min)+abs(w_max));
+		
 
 
 		float val0=joy->buttons[0],val2=joy->buttons[2];
 		float val3=joy->buttons[3],val1=joy->buttons[1];
-		
+		float val6=joy->axes[6];
 		
 		if(val2==1 && val0==0)
 		{
@@ -106,6 +104,9 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 			Vx_Xbox_lock.lock();
 			Vx_Xbox=0.0;
 			Vx_Xbox_lock.unlock();
+			W_Xbox_lock.lock();
+			W_xbox=0.0;
+			W_Xbox_lock.unlock();
 		}
 		if(val1==1)
 		{
@@ -113,8 +114,20 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
             Vy_Xbox = - 0.0;
             Vy_Xbox_lock.unlock();
 		}
-/*	
- *		
+		if(val6==1)
+		{
+			W_Xbox_lock.lock();
+			W_xbox+=0.05;
+			W_Xbox_lock.unlock();
+		}
+		if(val6==-1)
+		{
+			W_Xbox_lock.lock();
+			W_xbox=-0.05;
+			W_Xbox_lock.unlock();
+		}
+
+/*		
 		alpha= maxalpha + ((alpha_axes-1)/2)*( abs(minalpha)+abs(maxalpha)); 
 
 		

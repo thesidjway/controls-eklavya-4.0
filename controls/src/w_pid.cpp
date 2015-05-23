@@ -51,8 +51,22 @@ void WPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 void WPid::wTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
 
+  double tempw, tempv,tempvy; 
+ 
   W_t_Lock.lock();
-  W_t = msg->angular.z;
+ 
+  tempw = msg->angular.z;
+  tempv = msg->linear.x;
+  tempvy= msg->linear.y;
+  if(std::signbit(tempvy)) {
+			W_error_integral = 0;
+  }
+  if (tempv==0){
+	  W_t = 0;
+  } else {
+	W_t = tempw/tempv;  
+	}
+  
   W_t_Lock.unlock();
 
 }
@@ -107,8 +121,16 @@ void WPid::implementPid(int argc, char** argv)
     Vl_Vr_a_lock.unlock();
 
     W_error_diff = W_error_old - W_error;
-    W_error_sum += W_error;
+    W_error_integral += W_error * Ki_W;
     W_error_old = W_error;
+
+	if (W_error_integral >= count_max){
+		W_error_integral = count_max;
+	} else if (W_error_integral <= - count_max){
+		W_error_integral = - count_max;
+	}
+
+
 
     W_error_integral = getMinMax((W_error_sum) * Ki_W , count_max , -count_max);
 
