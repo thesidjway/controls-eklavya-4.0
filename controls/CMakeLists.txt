@@ -40,9 +40,9 @@ include_directories(
 
 
 
-add_executable(encoders src/encoders.cpp src/eqep.cpp)
-target_link_libraries(encoders ${catkin_LIBRARIES})
-add_dependencies(encoders roscpp std_msgs geometry_msgs controls_msgs_gencpp )
+#add_executable(encoders src/encoders.cpp src/eqep.cpp)
+#target_link_libraries(encoders ${catkin_LIBRARIES})
+#add_dependencies(encoders roscpp std_msgs geometry_msgs controls_msgs_gencpp )
 
 
 #add_executable(test_encoders src/test_encoder.cpp)
@@ -61,7 +61,7 @@ add_executable(wpid_node src/w_pid.cpp )
 target_link_libraries(wpid_node ${catkin_LIBRARIES})
 add_dependencies(wpid_node roscpp std_msgs geometry_msgs)
 
-add_executable(vxpid_node src/vx_pid.cpp src/BlackCore.cpp src/BlackUART.cpp)
+add_executable(vxpid_node src/vx_pid.cpp)
 target_link_libraries(vxpid_node ${catkin_LIBRARIES})
 add_dependencies(vxpid_node roscpp std_msgs geometry_msgs)
 

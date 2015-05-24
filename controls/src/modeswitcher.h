@@ -11,8 +11,7 @@
 #include "modeswitcher.h"
 #include <controls_msgs/encoder_msg.h>
 
-
-#define Vx_a ( (Vl_a+Vr_a)/2 ) 
+ 
 
 using namespace std; 
 using namespace ros;
@@ -59,8 +58,7 @@ public:
 	void planCallback(const geometry_msgs::Twist::ConstPtr& pose);
 	
 	void publish(int argc, char** argv);
-	
-	void encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg);
+
 
 };
 

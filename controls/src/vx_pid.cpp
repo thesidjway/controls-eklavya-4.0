@@ -1,6 +1,8 @@
 #include <iostream>
 #include "vx_pid.h"
-#include "BlackUART.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -67,10 +69,10 @@ void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg) {
  }
  */
 
-void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg) {
+void VxPid::encoderCallback(const geometry_msgs::Pose2D::ConstPtr& msg) {
 	Vl_Vr_a_lock.lock();
-	Vl_a = msg->left_vel;
-	Vr_a = msg->right_vel;
+	Vl_a = msg->x;
+	Vr_a = msg->y;
 	Vl_Vr_a_lock.unlock();
 
 }
@@ -82,22 +84,11 @@ void VxPid::implementPid(int argc, char** argv)
 	ros::init(argc, argv, "vxpid_node");
 
 	ros::NodeHandle nh_;
-	ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose", 5,
-																		&VxPid::vxTargetUpdateCallback, this);
+	ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose", 5,&VxPid::vxTargetUpdateCallback, this);
 	//ros::Subscriber Alpha_Actual_Subscriber = nh_.subscribe<std_msgs::Float64>("alpha_val_actual" , 5 , Alpha_actual_callback);
-	ros::Subscriber Encoder_Subscriber = nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &VxPid::encoderCallback,
-																		this);
+	ros::Subscriber Encoder_Subscriber = nh_.subscribe<geometry_msgs::Pose2D>("encoders", 5, &VxPid::encoderCallback, this);
+																	
 
-
-	BlackLib::BlackUART  Uart1(BlackLib::UART1,
-                               BlackLib::Baud9600,
-                               BlackLib::ParityEven,
-                               BlackLib::StopOne,
-                               BlackLib::Char8 );
-
-	Uart1.open( BlackLib::ReadWrite | BlackLib::NonBlock );
-	std::string writeToUart1;
-    std::ostringstream os1;
 
 	nh_.getParam("/vxpid_node/Kp_Vx", Kp_Vx);
 	nh_.getParam("/vxpid_node/Ki_Vx", Ki_Vx);
@@ -113,8 +104,8 @@ void VxPid::implementPid(int argc, char** argv)
 
 	
 	ros::Rate loop_rate(vx_pid_loop_rate);
-
-
+	
+FILE *file0;
 	while (ros::ok()) {
 		Vl_Vr_a_lock.lock();
 		Vx_t_lock.lock();
@@ -129,8 +120,10 @@ void VxPid::implementPid(int argc, char** argv)
 		Alpha_lock.unlock();
 		Vx_t_lock.unlock();
 		Vl_Vr_a_lock.unlock();
+		
+		
 
-		printf("Pmin: %3.3f Pmax: %3.3f ", PWM_min_percent , PWM_max_percent); 
+		printf("Pmin: %3.3f Pmax: %3.3f ", (float)PWM_min_percent , (float)PWM_max_percent); 
 		float percerror=(vxerrorprinter/vxtprinter)*100.0;
 		printf("VT: %3.3f VA: %3.3f  error: %3.3f ", vxtprinter , vxaprinter , percerror);
 
@@ -145,7 +138,7 @@ void VxPid::implementPid(int argc, char** argv)
 		}
 
 		PWM_Duty_Cycle = (Vx_error) * Kp_Vx + (Vx_error_integral) + (Vx_error_diff) * Kd_Vx + 1400;
-		printf("Vyt is %f",Vy_t);
+		//printf("Vyt is %f",Vy_t);
 
 		if(std::signbit(Vy_t)) {
 			Vx_error_integral = 0;
@@ -155,15 +148,14 @@ void VxPid::implementPid(int argc, char** argv)
 
 //	printf( " C_PWM: %3.3f " , PWM_Duty_Cycle);
 
+		
 		PWM_Duty_Cycle = getMinMax(PWM_Duty_Cycle, PWM_max_percent, PWM_min_percent);
 
-		os1.str("");
-		os1.clear();
-		os1 << (int) PWM_Duty_Cycle << "\n";
-		writeToUart1 = os1.str();
-		Uart1 << writeToUart1;
-		usleep(1000);
-   	
+		file0 = fopen("/dev/serial/by-id/usb-Arduino__www.arduino.cc__Arduino_Due_Prog._Port_55432333138351607141-if00","w");
+		fprintf(file0,"%d",(int)PWM_Duty_Cycle);
+		fprintf(file0,"%c",'e');
+		fclose(file0);
+
 		printf(" G_PWM: %3.3f \n ", PWM_Duty_Cycle); 
 
 		ros::spinOnce();

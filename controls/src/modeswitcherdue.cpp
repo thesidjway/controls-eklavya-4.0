@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "modeswitcher.h"
+#include <geometry_msgs/Pose2D.h>
 #include <cmath>
 
 using namespace ros;
@@ -10,7 +11,7 @@ ModeSwitcher::ModeSwitcher() :
 	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock(),Vy_Xbox_lock(),finalvt()
 {
 
-	d=0.7;//distance between steering and the back tires in meters
+	d=0.9;//distance between steering and the back tires in meters
 	
 	maxalpha=45 ; minalpha = -45;
 
@@ -143,14 +144,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 }
 
 
-void ModeSwitcher::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
-{
-  Vl_Vr_a_lock.lock();
-  Vl_a = msg->left_vel;
-  Vr_a = msg->right_vel;
-  Vl_Vr_a_lock.unlock();
 
-}
 
 
 void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
