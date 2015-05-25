@@ -7,6 +7,7 @@ WPid::WPid() :
     W_t_Lock(), Alpha_Lock(), Vl_Vr_a_lock()
 {
 
+	W_a=0;
 	W_t = 0;
 	Vr_a = 0;
 	Vl_a = 0;
@@ -37,13 +38,17 @@ double WPid::getMinMax(int Cur_Var, int max, int min)
     return Cur_Var;
 }
 
-void WPid::encoderCallback(const geometry_msgs::Pose2D::ConstPtr& msg)
+void WPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
 {
 
- 
   Vl_Vr_a_lock.lock();
-  Vl_a = msg->x;
-  Vr_a = msg->y;
+  Vl_a = msg->left_vel;
+  Vr_a = msg->right_vel;
+  W_a=((Vr_a - Vl_a)/(2*r))/((Vr_a + Vl_a)/2);
+  if(((Vr_a+Vl_a)<0.1) && ((Vr_a+Vl_a)>-0.1))
+  {
+	  W_a=0;
+  }  
   Vl_Vr_a_lock.unlock();
 
 }
@@ -63,7 +68,8 @@ void WPid::wTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg)
   }
   if (tempv==0){
 	  W_t = 0;
-  } else {
+  } 
+  else {
 	W_t = tempw/tempv;  
 	}
   
@@ -79,7 +85,7 @@ void WPid::implementPid(int argc, char** argv)
   ros::NodeHandle pid_nh_;
 
   ros::Subscriber Override_Subscriber = pid_nh_.subscribe<geometry_msgs::Twist>("target_pose", 5, &WPid::wTargetUpdateCallback, this);
-  ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<geometry_msgs::Pose2D>("encoders", 5, &WPid::encoderCallback,this);
+  ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &WPid::encoderCallback,this);
 
   ros::Publisher alpha_pub = pid_nh_.advertise<std_msgs::Float64>("alpha_val_manipulated", 100);
   ros::Publisher wa_pub = pid_nh_.advertise<std_msgs::Float64>("wa", 100);
@@ -100,7 +106,7 @@ void WPid::implementPid(int argc, char** argv)
 
   ros::Rate loop_rate(w_pid_loop_rate);
 
-  std_msgs::Float64 alpha_msg;
+  std_msgs::Float64 alpha_msg,wa_msg,wt_msg;
 
 	std::cout<<std::endl;
 	
@@ -110,7 +116,8 @@ void WPid::implementPid(int argc, char** argv)
     Vl_Vr_a_lock.lock();
     W_t_Lock.lock();
     double W_error = W_t - W_a;
-	
+	wa_msg.data=W_a;
+	wt_msg.data=W_t;
 	printf("CMin: %3.3f CMax: %3.3f ", count_max , count_min); 
     
 	printf("WT: %3.3f WA: %3.3f  error: %3.3f ", W_t, W_a, W_error); 
@@ -148,6 +155,8 @@ void WPid::implementPid(int argc, char** argv)
     printf(" G_Alpha: %3.3f \n", Alpha_manipulated); 
 
     alpha_pub.publish(alpha_msg);
+    wa_pub.publish(wa_msg);
+    wt_pub.publish(wt_msg);
 
     ros::spinOnce();
   

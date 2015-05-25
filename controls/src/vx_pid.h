@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <std_msgs/Float32.h>
-#include <geometry_msgs/Pose2D.h>
+#include <controls_msgs/encoder_msg.h>
 #include <std_msgs/Int32.h>
 #include <geometry_msgs/Twist.h>
 #include <cmath>
@@ -51,7 +51,7 @@ public:
 	double getMinMax(int Cur_Var,int max,int min);
 	void vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg);
 	//void Alpha_actual_callback(const std_msgs::Float64::ConstPtr& msg);
-	void encoderCallback(const geometry_msgs::Pose2D::ConstPtr& msg);
+	void encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg);
 	void implementPid(int argc, char** argv);
 
 };

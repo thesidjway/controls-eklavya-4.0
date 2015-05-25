@@ -8,11 +8,11 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int32.h>
 #include <geometry_msgs/Twist.h>
-#include <geometry_msgs/Pose2D.h>
+#include <controls_msgs/encoder_msg.h>
 #include <math.h>
 #include <mutex>
 
-#define W_a  ( (Vr_a - Vl_a)/(2*r) )/(  (Vr_a + Vl_a)/2 )
+
 
 class WPid {
 
@@ -20,7 +20,7 @@ private:
 	
 	std::mutex W_t_Lock , Alpha_Lock , Vl_Vr_a_lock;
 
-	double W_t;
+	double W_t,W_a;
 	double Vr_a , Vl_a;
 	double Alpha_a, Alpha_t;
 
@@ -41,7 +41,7 @@ public:
 
 	WPid();
 	double getMinMax(int Cur_Var,int max,int min);
-	void encoderCallback(const geometry_msgs::Pose2D::ConstPtr& msg);
+	void encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg);
 	void wTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg);
 	void implementPid(int argc, char** argv);
 

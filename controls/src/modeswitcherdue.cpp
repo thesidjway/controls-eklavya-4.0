@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include "modeswitcher.h"
-#include <geometry_msgs/Pose2D.h>
 #include <cmath>
 
 using namespace ros;
@@ -124,7 +123,7 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 		if(val6==-1)
 		{
 			W_Xbox_lock.lock();
-			W_xbox=-0.05;
+			W_xbox-=0.05;
 			W_Xbox_lock.unlock();
 		}
 
@@ -243,7 +242,7 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 				Vx_planner_lock.unlock();
 
 				W_planner_lock.lock();
-					finaltwist.linear.x=W_Planner;
+					finaltwist.angular.z=W_Planner;
 					finaltwist.linear.x=Vx_Planner;
                 //    cout;
 					cout<<endl;

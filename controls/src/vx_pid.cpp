@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
 using namespace std;
 
 
@@ -69,10 +70,11 @@ void VxPid::vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg) {
  }
  */
 
-void VxPid::encoderCallback(const geometry_msgs::Pose2D::ConstPtr& msg) {
+void VxPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg) {
+//	cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
 	Vl_Vr_a_lock.lock();
-	Vl_a = msg->x;
-	Vr_a = msg->y;
+	Vl_a = msg->left_vel;
+	Vr_a = msg->right_vel;
 	Vl_Vr_a_lock.unlock();
 
 }
@@ -86,7 +88,7 @@ void VxPid::implementPid(int argc, char** argv)
 	ros::NodeHandle nh_;
 	ros::Subscriber Override_Subscriber = nh_.subscribe<geometry_msgs::Twist>("target_pose", 5,&VxPid::vxTargetUpdateCallback, this);
 	//ros::Subscriber Alpha_Actual_Subscriber = nh_.subscribe<std_msgs::Float64>("alpha_val_actual" , 5 , Alpha_actual_callback);
-	ros::Subscriber Encoder_Subscriber = nh_.subscribe<geometry_msgs::Pose2D>("encoders", 5, &VxPid::encoderCallback, this);
+	ros::Subscriber Encoder_Subscriber = nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &VxPid::encoderCallback, this);
 																	
 
 
@@ -125,6 +127,10 @@ FILE *file0;
 
 		printf("Pmin: %3.3f Pmax: %3.3f ", (float)PWM_min_percent , (float)PWM_max_percent); 
 		float percerror=(vxerrorprinter/vxtprinter)*100.0;
+		if(vxtprinter<0.01 && vxtprinter >-0.01)
+		{
+			percerror=100;
+		}
 		printf("VT: %3.3f VA: %3.3f  error: %3.3f ", vxtprinter , vxaprinter , percerror);
 
 		Vx_error_diff = Vx_error_old - Vx_error;

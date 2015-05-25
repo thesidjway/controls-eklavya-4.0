@@ -26,7 +26,7 @@
 	<param name="dev" value="/dev/input/js4"/>
 </node>
 	
-<node pkg="encoders" type="encoder_node" name = "encoder_node" respawn="true" output="screen">
+<!--<node pkg="encoders" type="encoder_node" name = "encoder_node" respawn="true" output="screen">-->
 	
 <node pkg="controls" type="modeswitching_node" name = "modeswitching_node" respawn="true" output="screen">
 	<param name="maxvelocity" value="0.5"/>
@@ -40,14 +40,14 @@
 	<param name="PWM_min" value="1400"/>
 	<param name="PWM_max" value="3000"/>
 	<param name="PWM_PERIOD_TIME" value="50000000"/>
-	<param name="vx_pid_loop_rate" value="30"/>
+	<param name="vx_pid_loop_rate" value="15"/>
 </node>
 
 <node pkg="controls" type="wpid_node" name="wpid_node" respawn="true" output="screen">
 	<param name="Kp_W" value="60.0"/>
 	<param name="Ki_W" value="0.5" />
 	<param name="Kd_W" value="10.0"/>
-	<param name="w_pid_loop_rate" value="10"/>
+	<param name="w_pid_loop_rate" value="15"/>
 	
 </node>
 
