@@ -8,7 +8,6 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int32.h>
 #include <geometry_msgs/Twist.h>
-#include <controls_msgs/encoder_msg.h>
 #include <math.h>
 #include <mutex>
 
@@ -41,7 +40,7 @@ public:
 
 	WPid();
 	double getMinMax(int Cur_Var,int max,int min);
-	void encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg);
+	void encoderCallback(const geometry_msgs::Twist::ConstPtr &);
 	void wTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg);
 	void implementPid(int argc, char** argv);
 

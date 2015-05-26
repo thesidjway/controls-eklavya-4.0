@@ -25,13 +25,14 @@ private:
 	double maxalpha,minalpha;
 	double w_max,w_min;
 	
-	std::mutex Vx_Xbox_lock ,Vy_Xbox_lock, Vl_Vr_a_lock, W_Xbox_lock , Vx_planner_lock , W_planner_lock , xbox_flag_lock;
+	std::mutex Vx_Xbox_lock ,Vy_Xbox_lock, Vz_Xbox_lock, Vl_Vr_a_lock, W_Xbox_lock , Vx_planner_lock , W_planner_lock , xbox_flag_lock;
 
 	float alpha;
 
 	float W_xbox;
 	float Vx_Xbox;
 	float Vy_Xbox;
+	float Vz_Xbox;
 
 	float W_Planner;
 	float Vx_Planner;

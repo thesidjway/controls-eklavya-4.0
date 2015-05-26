@@ -7,7 +7,7 @@ using namespace ros;
 using namespace std;
 
 ModeSwitcher::ModeSwitcher() :
-	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() , W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock(),Vy_Xbox_lock(),finalvt()
+	Vl_Vr_a_lock() , finaltwist(), Vx_Xbox_lock() ,Vz_Xbox_lock(), W_Xbox_lock() , Vx_planner_lock() , W_planner_lock() , xbox_flag_lock(),Vy_Xbox_lock(),finalvt()
 {
 
 	d=0.9;//distance between steering and the back tires in meters
@@ -19,6 +19,7 @@ ModeSwitcher::ModeSwitcher() :
 	W_xbox=0;
 	Vx_Xbox=0;
 	Vy_Xbox=0.0;
+	Vz_Xbox=+0.0;
 
 	W_Planner=0;
 	Vx_Planner=0;
@@ -43,7 +44,9 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 
 	if(auto_button==1 && manual_button==0 )
 	{
-
+		Vz_Xbox_lock.lock();
+		Vz_Xbox=+0.0;
+		Vz_Xbox_lock.unlock();
 //		std::cout<< "***************" <<std::endl;
 		xbox_flag_lock.lock();
 		xboxflag=0;
@@ -54,6 +57,9 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 
 	else if(manual_button==1 && auto_button==0)
 	{
+		Vz_Xbox_lock.lock();
+		Vz_Xbox=-0.0;
+		Vz_Xbox_lock.unlock();
 		xbox_flag_lock.lock();
 //		std::cout<< "---------------" <<std::endl;
 		
@@ -85,7 +91,8 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
 
 		float val0=joy->buttons[0],val2=joy->buttons[2];
 		float val3=joy->buttons[3],val1=joy->buttons[1];
-		float val6=joy->axes[6];
+		float valaxes=joy->buttons[6];
+		float valaxes2=joy->buttons[7];
 		
 		if(val2==1 && val0==0)
 		{
@@ -114,16 +121,16 @@ void ModeSwitcher::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) //main cal
             Vy_Xbox = - 0.0;
             Vy_Xbox_lock.unlock();
 		}
-		if(val6==1)
+		if(valaxes==1)
 		{
 			W_Xbox_lock.lock();
-			W_xbox+=0.05;
+			W_xbox=W_xbox+0.05;
 			W_Xbox_lock.unlock();
 		}
-		if(val6==-1)
+		if(valaxes2==1)
 		{
 			W_Xbox_lock.lock();
-			W_xbox-=0.05;
+			W_xbox=W_xbox-0.05;
 			W_Xbox_lock.unlock();
 		}
 
@@ -212,13 +219,17 @@ void ModeSwitcher::planCallback(const geometry_msgs::Twist::ConstPtr& pose)
 				
 				Vx_Xbox_lock.lock();
 			 	Vy_Xbox_lock.lock();
+			 	Vz_Xbox_lock.lock();
+				
 				finalvt.data=Vx_Xbox;
 				finaltwist.linear.y=Vy_Xbox;
 				finaltwist.linear.x=Vx_Xbox;
+				finaltwist.linear.z=Vz_Xbox;
 			//	cout;
 				cout<<endl;
 				Vx_Xbox_lock.unlock();
 				Vy_Xbox_lock.unlock();
+				Vz_Xbox_lock.unlock();
 				W_Xbox_lock.lock();
 				finaltwist.angular.z= W_xbox;
 			//	cout;

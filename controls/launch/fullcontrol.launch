@@ -34,19 +34,19 @@
 
 
 <node pkg="controls" type="vxpid_node" name="vxpid_node" respawn="true" output="screen">
-	<param name="Kp_Vx" value="400"/>
-	<param name="Ki_Vx" value="6.0"/>
-	<param name="Kd_Vx" value="110.0"/>
-	<param name="PWM_min" value="1400"/>
+	<param name="Kp_Vx" value="200.0"/>  <!--450,25,250-->
+	<param name="Ki_Vx" value="5.0"/>
+	<param name="Kd_Vx" value="55.0"/>
+	<param name="PWM_min" value="1650"/>
 	<param name="PWM_max" value="3000"/>
 	<param name="PWM_PERIOD_TIME" value="50000000"/>
 	<param name="vx_pid_loop_rate" value="15"/>
 </node>
 
 <node pkg="controls" type="wpid_node" name="wpid_node" respawn="true" output="screen">
-	<param name="Kp_W" value="60.0"/>
-	<param name="Ki_W" value="0.5" />
-	<param name="Kd_W" value="10.0"/>
+	<param name="Kp_W" value="550"/>
+	<param name="Ki_W" value="7" />
+	<param name="Kd_W" value="250"/>
 	<param name="w_pid_loop_rate" value="15"/>
 	
 </node>

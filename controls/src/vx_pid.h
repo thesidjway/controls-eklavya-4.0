@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <std_msgs/Float32.h>
-#include <controls_msgs/encoder_msg.h>
 #include <std_msgs/Int32.h>
 #include <geometry_msgs/Twist.h>
 #include <cmath>
@@ -31,7 +30,7 @@ private:
 	//double r;		  // Rear wheel center to center of line joining distance	
 
 	double Vr_a , Vl_a;
-	double Vx_t,Vy_t;   
+	double Vx_t,Vy_t,Vz_t;   
 	double Alpha_a;
 	double Kp_Vx, Ki_Vx, Kd_Vx;
 	double Vx_error_diff, Vx_error_old , Vx_error_integral;
@@ -43,7 +42,7 @@ private:
 	
 	int vx_pid_loop_rate;
 	
-	std::mutex Vx_t_lock , Alpha_lock , Vl_Vr_a_lock, Vy_t_lock;
+	std::mutex Vx_t_lock , Alpha_lock , Vl_Vr_a_lock, Vy_t_lock, manualmode_lock;
 
 public:
 
@@ -51,7 +50,7 @@ public:
 	double getMinMax(int Cur_Var,int max,int min);
 	void vxTargetUpdateCallback(const geometry_msgs::Twist::ConstPtr& msg);
 	//void Alpha_actual_callback(const std_msgs::Float64::ConstPtr& msg);
-	void encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg);
+	void encoderCallback(const geometry_msgs::Twist::ConstPtr& msg);
 	void implementPid(int argc, char** argv);
 
 };

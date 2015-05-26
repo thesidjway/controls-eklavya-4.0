@@ -38,12 +38,12 @@ double WPid::getMinMax(int Cur_Var, int max, int min)
     return Cur_Var;
 }
 
-void WPid::encoderCallback(const controls_msgs::encoder_msg::ConstPtr& msg)
+void WPid::encoderCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
 
   Vl_Vr_a_lock.lock();
-  Vl_a = msg->left_vel;
-  Vr_a = msg->right_vel;
+  Vl_a = msg->linear.x;
+  Vr_a = msg->linear.y;
   W_a=((Vr_a - Vl_a)/(2*r))/((Vr_a + Vl_a)/2);
   if(((Vr_a+Vl_a)<0.1) && ((Vr_a+Vl_a)>-0.1))
   {
@@ -85,7 +85,7 @@ void WPid::implementPid(int argc, char** argv)
   ros::NodeHandle pid_nh_;
 
   ros::Subscriber Override_Subscriber = pid_nh_.subscribe<geometry_msgs::Twist>("target_pose", 5, &WPid::wTargetUpdateCallback, this);
-  ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<controls_msgs::encoder_msg>("encoders", 5, &WPid::encoderCallback,this);
+  ros::Subscriber Encoder_Subscriber = pid_nh_.subscribe<geometry_msgs::Twist>("encoders", 5, &WPid::encoderCallback,this);
 
   ros::Publisher alpha_pub = pid_nh_.advertise<std_msgs::Float64>("alpha_val_manipulated", 100);
   ros::Publisher wa_pub = pid_nh_.advertise<std_msgs::Float64>("wa", 100);
